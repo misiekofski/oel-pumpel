@@ -9,6 +9,12 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Add permissions for GITHUB_TOKEN
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   # Deploy job
   deploy:
@@ -49,7 +55,6 @@ jobs:
           SKIP_PREFLIGHT_CHECK: true
           TSC_COMPILE_ON_ERROR: true
           GENERATE_SOURCEMAP: false
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           export NODE_OPTIONS="--max-old-space-size=4096"
-          npm run deploy
+          npm run deploy -- --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
