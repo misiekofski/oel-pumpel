@@ -241,14 +241,30 @@ class OilEmpireGame {
     }
     
     init() {
+        // Wait for DOM to be fully ready, then initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initializeGame());
+        } else {
+            this.initializeGame();
+        }
+    }
+    
+    initializeGame() {
         this.loadGameState(); // Load saved state first
         this.setupEventListeners();
         this.updateDisplay();
         this.updateMarketPrices();
         this.renderAchievements();
-        this.renderFieldTypes();
-        this.renderTechnologies();
-        this.renderActiveCrises();
+        
+        // Add a small delay to ensure DOM is fully ready for new features
+        setTimeout(() => {
+            console.log('Initializing new features after DOM ready...');
+            this.renderFieldTypes();
+            this.renderTechnologies();
+            this.renderActiveCrises();
+            console.log('New features initialization complete');
+        }, 100);
+        
         this.addToLog('Welcome to Oil Empire! Buy oil fields and research new technologies to start your business.');
     }
     
@@ -398,6 +414,8 @@ class OilEmpireGame {
         
         this.updateDisplay();
         this.renderActiveCrises();
+        this.renderFieldTypes(); // Re-render field types to update costs/availability
+        this.renderTechnologies(); // Re-render technologies to update research status
         this.saveGameState(); // Save after each month
     }
     
@@ -692,6 +710,7 @@ class OilEmpireGame {
         const fieldTypesList = document.getElementById('field-types-list');
         if (!fieldTypesList) {
             console.error('field-types-list element not found!');
+            setTimeout(() => this.renderFieldTypes(), 200); // Retry after 200ms
             return;
         }
         
@@ -744,6 +763,7 @@ class OilEmpireGame {
         const technologyList = document.getElementById('technology-list');
         if (!technologyList) {
             console.error('technology-list element not found!');
+            setTimeout(() => this.renderTechnologies(), 200); // Retry after 200ms
             return;
         }
         
@@ -1048,8 +1068,6 @@ class OilEmpireGame {
         document.getElementById('oil-production').textContent = this.getProductionPerField().toLocaleString();
         
         // Costs
-        document.getElementById('field-cost').textContent = this.getFieldCost().toLocaleString();
-        document.getElementById('field-price').textContent = this.getFieldCost().toLocaleString();
         document.getElementById('upgrade-cost').textContent = this.getUpgradeCost().toLocaleString();
         
         // Date
@@ -1084,41 +1102,6 @@ class OilEmpireGame {
         
         // Update field summary
         this.updateFieldSummary();
-        
-        // Update field summary
-        this.updateFieldSummary();
-    }
-    
-    updateFieldSummary() {
-        const fieldSummary = this.oilFieldManager.getFieldSummary(this.gameState);
-        const fieldsInfo = document.querySelector('.fields-info');
-        
-        // Remove existing field summary
-        const existingSummary = fieldsInfo.querySelector('.field-summary');
-        if (existingSummary) {
-            existingSummary.remove();
-        }
-        
-        if (fieldSummary.length > 0) {
-            const summaryDiv = document.createElement('div');
-            summaryDiv.className = 'field-summary';
-            
-            const summaryTitle = document.createElement('h4');
-            summaryTitle.textContent = 'Field Breakdown:';
-            summaryDiv.appendChild(summaryTitle);
-            
-            fieldSummary.forEach(field => {
-                const fieldItem = document.createElement('div');
-                fieldItem.className = 'field-summary-item';
-                fieldItem.innerHTML = `
-                    <span>${field.icon} ${field.name} (${field.count})</span>
-                    <span class="field-efficiency">${field.avgEfficiency}% avg</span>
-                `;
-                summaryDiv.appendChild(fieldItem);
-            });
-            
-            fieldsInfo.appendChild(summaryDiv);
-        }
     }
     
     addToLog(message) {
