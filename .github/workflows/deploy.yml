@@ -61,14 +61,22 @@ jobs:
           export NODE_OPTIONS="--max-old-space-size=4096"
           npm run build || echo "❌ Build failed, but continuing..."
           
-      - name: Create fallback build if needed
+      - name: Create working build from vanilla JS version
         run: |
-          if [ ! -d "build" ] || [ ! "$(ls -A build 2>/dev/null)" ]; then
-            echo "Creating fallback build directory..."
-            mkdir -p build
-            cp public/index.html build/index.html
-            echo "✅ Fallback build created with index.html"
-          fi
+          echo "React build failed, deploying vanilla JS version from legacy folder..."
+          mkdir -p build
+          # Copy the working vanilla JS game files from legacy folder
+          cp legacy/index.html build/index.html
+          cp legacy/style.css build/style.css
+          cp legacy/script.js build/script.js
+          cp legacy/crisis-events.js build/crisis-events.js
+          cp legacy/technology.js build/technology.js
+          cp legacy/oil-fields.js build/oil-fields.js
+          # Copy images
+          mkdir -p build/img
+          cp -r legacy/img/* build/img/ 2>/dev/null || true
+          echo "✅ Vanilla JS version copied from legacy folder to build directory"
+          ls -la build/
           
       - name: Check build directory
         run: |
