@@ -29,6 +29,7 @@
                     <button id="next-month" class="next-month-btn">⏭️ Next Month</button>
                     <button id="save-game" class="save-btn">💾 Save Game</button>
                     <button id="clear-save" class="clear-save-btn">🗑️ Clear Save</button>
+                    <button id="debug-render" class="save-btn">🔄 Debug Render</button>
                 </div>
                 
                 <div class="achievements-section">
@@ -50,15 +51,13 @@
         <main class="game-main">
             <div class="left-panel">
                 <section class="oil-fields-section">
-                    <h2>🏭 Oil Fields</h2>
+                    <h2>🏭 Oil Fields Overview</h2>
                     <div class="fields-info">
-                        <p>Owned Oil Fields: <span id="owned-fields">0</span></p>
-                        <p>Total Monthly Production: <span id="total-production">0</span> barrels</p>
-                        <p>Oil Field Price: $<span id="field-price">25000</span> each</p>
-                    </div>
-                    
-                    <div class="actions">
-                        <button id="buy-field" class="action-btn">🏭 Buy Oil Field ($<span id="field-cost">25000</span>)</button>
+                        <p>Total Oil Fields: <span id="owned-fields">0</span></p>
+                        <p>Monthly Production: <span id="total-production">0</span> barrels</p>
+                        <div id="field-summary" class="field-summary" style="display: none;">
+                            <!-- Field summary will be populated by JavaScript -->
+                        </div>
                     </div>
                 </section>
 
