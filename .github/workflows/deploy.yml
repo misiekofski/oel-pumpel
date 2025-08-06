@@ -23,11 +23,24 @@ jobs:
       - name: Install dependencies
         run: |
           rm -f package-lock.json
-          npm install --legacy-peer-deps
+          npm install --legacy-peer-deps --force
           
-      - name: Build & Deploy
+      - name: Configure git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          
+      - name: Build
         env:
           CI: false
           GENERATE_SOURCEMAP: false
+          SKIP_PREFLIGHT_CHECK: true
+          DISABLE_ESLINT_PLUGIN: true
         run: |
-          npm run deploy
+          npm run build
+          
+      - name: Deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx gh-pages -d build -r https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

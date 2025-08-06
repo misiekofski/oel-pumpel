@@ -25,7 +25,9 @@
   "overrides": {
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
-    "schema-utils": "^3.3.0"
+    "schema-utils": "^3.3.0",
+    "webpack": "^5.88.0",
+    "mini-css-extract-plugin": "^2.7.6"
   },
   "browserslist": {
     "production": [
