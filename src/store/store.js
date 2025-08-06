@@ -3,6 +3,10 @@ import gameReducer from './gameSlice';
 import oilFieldsReducer from './oilFieldsSlice';
 import technologyReducer from './technologySlice';
 import crisisReducer from './crisisSlice';
+import { loadGameState, saveGameState } from '../utils/localStorage';
+
+// Load persisted state
+const persistedState = loadGameState();
 
 export const store = configureStore({
   reducer: {
@@ -15,10 +19,16 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
+        ignoredPaths: ['game.achievements.unlocked'], // Ignore Set object
       },
     }),
-  // Add preloaded state to ensure all slices are initialized
-  preloadedState: undefined, // Let Redux use initial states from slices
+  preloadedState: persistedState, // Load saved state if available
+});
+
+// Subscribe to store changes and save to localStorage
+store.subscribe(() => {
+  const state = store.getState();
+  saveGameState(state);
 });
 
 // Log the initial state to debug

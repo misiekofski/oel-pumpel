@@ -6,39 +6,29 @@ import { updateMoney } from '../store/gameSlice';
 
 const OilFieldsContainer = styled.div`
   h2 {
-    color: #FFD700;
+    color: #495057;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 `;
 
 const FieldGrid = styled.div`
   display: grid;
-  gap: 15px;
+  gap: 10px;
 `;
 
 const FieldCard = styled.div`
-  background: ${props => props.purchased ? 
-    'linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1))' : 
-    'rgba(255, 255, 255, 0.05)'
-  };
-  border: 2px solid ${props => {
-    switch (props.type) {
-      case 'premium': return '#FFD700';
-      case 'standard': return '#4169E1';
-      case 'budget': return '#CD853F';
-      default: return '#666';
-    }
-  }};
-  border-radius: 12px;
-  padding: 15px;
-  transition: all 0.3s ease;
+  background: ${props => props.purchased ? '#f8f9fa' : '#ffffff'};
+  border: 1px solid ${props => props.purchased ? '#28a745' : '#e9ecef'};
+  border-radius: 6px;
+  padding: 12px;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: ${props => props.purchased ? '#28a745' : '#adb5bd'};
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -50,39 +40,26 @@ const FieldHeader = styled.div`
 `;
 
 const FieldName = styled.h3`
-  color: ${props => {
-    switch (props.type) {
-      case 'premium': return '#FFD700';
-      case 'standard': return '#4169E1';
-      case 'budget': return '#CD853F';
-      default: return '#FFF';
-    }
-  }};
+  color: #495057;
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
 `;
 
 const FieldType = styled.span`
-  background: ${props => {
-    switch (props.type) {
-      case 'premium': return '#FFD700';
-      case 'standard': return '#4169E1';
-      case 'budget': return '#CD853F';
-      default: return '#666';
-    }
-  }};
-  color: ${props => props.type === 'premium' ? '#000' : '#FFF'};
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  background: #6c757d;
+  color: #ffffff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
   text-transform: uppercase;
 `;
 
 const FieldDescription = styled.p`
-  color: #CCC;
-  font-size: 0.9rem;
-  margin: 8px 0;
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin: 6px 0;
   font-style: italic;
 `;
 
@@ -98,12 +75,12 @@ const StatItem = styled.div`
   text-align: center;
   
   .label {
-    color: #AAA;
+    color: #6c757d;
     font-size: 0.8rem;
   }
   
   .value {
-    color: #FFF;
+    color: #495057;
     font-weight: bold;
   }
 `;
@@ -121,24 +98,23 @@ const ActionButton = styled.button`
   ${props => {
     if (props.purchased) {
       return `
-        background: linear-gradient(45deg, #00AA00, #00FF00);
-        color: #000;
+        background: #28a745;
+        color: #ffffff;
         cursor: default;
       `;
     } else if (props.disabled) {
       return `
-        background: #666;
-        color: #999;
+        background: #6c757d;
+        color: #ffffff;
         cursor: not-allowed;
       `;
     } else {
       return `
-        background: linear-gradient(45deg, #FFD700, #FFA500);
-        color: #000;
+        background: #007bff;
+        color: #ffffff;
         
         &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+          background: #0056b3;
         }
       `;
     }
@@ -148,14 +124,16 @@ const ActionButton = styled.button`
 const ProgressInfo = styled.div`
   margin-top: 10px;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
   border-radius: 6px;
   font-size: 0.9rem;
+  color: #495057;
   
   .progress-bar {
     width: 100%;
     height: 6px;
-    background: #333;
+    background: #e9ecef;
     border-radius: 3px;
     margin-top: 5px;
     overflow: hidden;
@@ -163,7 +141,7 @@ const ProgressInfo = styled.div`
   
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #FFD700, #FFA500);
+    background: #28a745;
     transition: width 0.3s ease;
   }
 `;

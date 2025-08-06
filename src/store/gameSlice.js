@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  money: 50000,
+  money: 250000,
   oilStock: 0,
   ownedFields: 0,
   equipmentLevel: 1,

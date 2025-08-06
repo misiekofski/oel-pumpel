@@ -6,104 +6,109 @@ import { updateMoney } from '../store/gameSlice';
 
 const TechnologyContainer = styled.div`
   h2 {
-    color: #FFD700;
+    color: #495057;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 `;
 
 const ResearchStatus = styled.div`
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 2px solid #4169E1;
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
 `;
 
 const StatusHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   
   h3 {
-    color: #4169E1;
+    color: #495057;
     margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
   }
   
   .research-points {
-    color: #FFD700;
-    font-weight: bold;
+    color: #28a745;
+    font-weight: 600;
   }
 `;
 
 const ProgressBar = styled.div`
   width: 100%;
-  height: 12px;
-  background: #333;
-  border-radius: 6px;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
   overflow: hidden;
-  margin: 10px 0;
+  margin: 8px 0;
   
   .fill {
     height: 100%;
-    background: linear-gradient(90deg, #4169E1, #00BFFF);
+    background: #28a745;
     transition: width 0.3s ease;
   }
 `;
 
 const CurrentResearch = styled.div`
-  color: #CCC;
-  font-size: 0.9rem;
+  color: #6c757d;
+  font-size: 0.8rem;
   
   .tech-name {
-    color: #FFF;
-    font-weight: bold;
+    color: #495057;
+    font-weight: 600;
   }
 `;
 
 const TechGrid = styled.div`
   display: grid;
-  gap: 12px;
-  max-height: 400px;
+  gap: 6px;
+  max-height: 350px;
   overflow-y: auto;
   
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    background: #f8f9fa;
+    border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #FFD700;
-    border-radius: 4px;
+    background: #adb5bd;
+    border-radius: 3px;
   }
 `;
 
 const TechCard = styled.div`
   background: ${props => {
-    if (props.researched) return 'linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1))';
-    if (props.available) return 'rgba(255, 255, 255, 0.08)';
-    return 'rgba(255, 255, 255, 0.03)';
+    if (props.researched) return '#d4edda';
+    if (props.available) return '#ffffff';
+    return '#f8f9fa';
   }};
-  border: 2px solid ${props => {
-    if (props.researched) return '#00AA00';
-    if (props.available) return '#4169E1';
-    return '#666';
+  border: 1px solid ${props => {
+    if (props.researched) return '#28a745';
+    if (props.available) return '#007bff';
+    return '#e9ecef';
   }};
-  border-radius: 10px;
-  padding: 12px;
-  opacity: ${props => props.available || props.researched ? 1 : 0.6};
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  padding: 6px;
+  opacity: ${props => props.available || props.researched ? 1 : 0.7};
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: ${props => props.available ? 'translateY(-1px)' : 'none'};
-    box-shadow: ${props => props.available ? '0 4px 12px rgba(0, 0, 0, 0.3)' : 'none'};
+    border-color: ${props => {
+      if (props.researched) return '#28a745';
+      if (props.available) return '#007bff';
+      return '#adb5bd';
+    }};
   }
 `;
 
@@ -111,45 +116,48 @@ const TechHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 `;
 
 const TechName = styled.h4`
   color: ${props => {
-    if (props.researched) return '#00FF00';
-    if (props.available) return '#4169E1';
-    return '#999';
+    if (props.researched) return '#155724';
+    if (props.available) return '#495057';
+    return '#6c757d';
   }};
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
 `;
 
 const TechCost = styled.div`
-  color: #FFD700;
-  font-weight: bold;
-  font-size: 0.9rem;
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.8rem;
 `;
 
 const TechDescription = styled.p`
-  color: #CCC;
-  font-size: 0.85rem;
-  margin: 8px 0;
+  color: #6c757d;
+  font-size: 0.75rem;
+  margin: 5px 0;
   font-style: italic;
-  line-height: 1.3;
+  line-height: 1.2;
 `;
 
 const Prerequisites = styled.div`
-  font-size: 0.8rem;
-  color: #AAA;
-  margin: 8px 0;
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin: 5px 0;
   
   .prereq-item {
     display: inline-block;
-    padding: 2px 6px;
-    margin: 2px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    border: 1px solid ${props => props.met ? '#00AA00' : '#AA0000'};
+    padding: 2px 4px;
+    margin: 1px;
+    background: #f8f9fa;
+    border-radius: 3px;
+    border: 1px solid ${props => props.met ? '#28a745' : '#dc3545'};
+    font-weight: 500;
+    font-size: 0.65rem;
   }
 `;
 

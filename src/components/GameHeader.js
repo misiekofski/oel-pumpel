@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled, { keyframes } from 'styled-components';
+import { clearGameSave } from '../utils/localStorage';
 
 const float = keyframes`
   0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -13,58 +14,65 @@ const pulse = keyframes`
 `;
 
 const HeaderContainer = styled.div`
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+  background: #ffffff;
   padding: 20px;
   text-align: center;
-  border-bottom: 3px solid #B8860B;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 `;
 
-const TrumpImage = styled.img`
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 4px solid #FFD700;
-  animation: ${float} 3s ease-in-out infinite, ${pulse} 2s ease-in-out infinite;
-  position: absolute;
-  top: 50%;
-  left: 30px;
-  transform: translateY(-50%);
+const HeaderTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const NewGameButton = styled.button`
+  background: #dc3545;
+  color: #ffffff;
+  border: 1px solid #dc3545;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
   
-  @media (max-width: 768px) {
-    width: 60px;
-    height: 60px;
-    left: 10px;
+  &:hover {
+    background: #c82333;
+    border-color: #bd2130;
+  }
+  
+  &:active {
+    background: #bd2130;
   }
 `;
 
 const GameTitle = styled.h1`
-  color: #8B0000;
-  font-size: 3rem;
-  font-weight: bold;
+  color: #495057;
+  font-size: 2.5rem;
+  font-weight: 600;
   margin: 0;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   
   @media (max-width: 768px) {
-    font-size: 2rem;
-    margin-left: 80px;
+    font-size: 1.8rem;
   }
 `;
 
 const GameSubtitle = styled.p`
-  color: #8B0000;
-  font-size: 1.2rem;
+  color: #6c757d;
+  font-size: 1.1rem;
   margin: 5px 0 20px 0;
   font-style: italic;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
   
   @media (max-width: 768px) {
-    margin-left: 80px;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -81,49 +89,50 @@ const StatsContainer = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: rgba(0, 0, 0, 0.2);
+  background: #f8f9fa;
   padding: 15px;
-  border-radius: 10px;
-  border: 2px solid #B8860B;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
   
   h3 {
-    color: #FFD700;
+    color: #495057;
     margin: 0 0 5px 0;
     font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
   }
   
   p {
-    color: #FFF;
+    color: #212529;
     margin: 0;
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 600;
   }
 `;
 
 const TrendIndicator = styled.span`
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 0.8rem;
-  font-weight: bold;
+  font-weight: 500;
   margin-left: 8px;
   
   ${props => {
     switch (props.trend) {
-      case 'Booming':
-        return 'background: #00FF00; color: #000;';
-      case 'Rising':
-        return 'background: #90EE90; color: #000;';
+      case 'Boom':
+        return 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;';
+      case 'Growth':
+        return 'background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb;';
       case 'Stable':
-        return 'background: #FFD700; color: #000;';
-      case 'Declining':
-        return 'background: #FFA500; color: #000;';
-      case 'Crashing':
-        return 'background: #FF0000; color: #FFF;';
+        return 'background: #f8f9fa; color: #495057; border: 1px solid #dee2e6;';
+      case 'Decline':
+        return 'background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;';
+      case 'Recession':
+        return 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;';
       default:
-        return 'background: #666; color: #FFF;';
+        return 'background: #e9ecef; color: #495057; border: 1px solid #ced4da;';
     }
   }}
 `;
@@ -157,12 +166,25 @@ const GameHeader = () => {
   const researchedTechs = technology?.technologies?.filter(t => t.researched)?.length || 0;
   const activeEvents = crisis?.activeEvents?.length || 0;
 
+  const handleNewGame = () => {
+    if (window.confirm('Are you sure you want to start a new game? All progress will be lost!')) {
+      clearGameSave();
+      window.location.reload();
+    }
+  };
+
   return (
     <HeaderContainer>
-      <TrumpImage src="./img/trump.png.png" alt="Trump" />
-      
-      <GameTitle>🛢️ DRILL BABY DRILL 🛢️</GameTitle>
-      <GameSubtitle>"The most tremendous oil empire, believe me!"</GameSubtitle>
+      <HeaderTop>
+        <div></div>
+        <div>
+          <GameTitle>🛢️ DRILL BABY DRILL 🛢️</GameTitle>
+          <GameSubtitle>"The most tremendous oil empire, believe me!"</GameSubtitle>
+        </div>
+        <NewGameButton onClick={handleNewGame}>
+          New Game
+        </NewGameButton>
+      </HeaderTop>
       
       <StatsContainer>
         <StatCard>

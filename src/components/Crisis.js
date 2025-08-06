@@ -4,41 +4,38 @@ import styled from 'styled-components';
 
 const CrisisContainer = styled.div`
   h2 {
-    color: #FFD700;
+    color: #495057;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 `;
 
 const CrisisStatus = styled.div`
-  background: ${props => props.hasActiveEvents ? 
-    'linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(255, 100, 100, 0.1))' :
-    'linear-gradient(135deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1))'
-  };
-  border: 2px solid ${props => props.hasActiveEvents ? '#FF4444' : '#00AA00'};
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 20px;
+  background: ${props => props.hasActiveEvents ? '#f8d7da' : '#d4edda'};
+  border: 1px solid ${props => props.hasActiveEvents ? '#f5c6cb' : '#c3e6cb'};
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
   text-align: center;
 `;
 
 const StatusIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 10px;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
 `;
 
 const StatusText = styled.div`
-  color: ${props => props.hasActiveEvents ? '#FF6666' : '#66FF66'};
-  font-weight: bold;
-  font-size: 1.1rem;
+  color: ${props => props.hasActiveEvents ? '#721c24' : '#155724'};
+  font-weight: 600;
+  font-size: 1rem;
 `;
 
 const StatusSubtext = styled.div`
-  color: #CCC;
-  font-size: 0.9rem;
-  margin-top: 5px;
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-top: 4px;
 `;
 
 const EventsList = styled.div`
@@ -52,28 +49,22 @@ const EventsList = styled.div`
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: #f8f9fa;
     border-radius: 4px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #FF4444;
+    background: #adb5bd;
     border-radius: 4px;
   }
 `;
 
 const EventCard = styled.div`
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(255, 100, 0, 0.1));
-  border: 2px solid #FF4444;
+  background: #ffffff;
+  border: 2px solid #dc3545;
   border-radius: 10px;
   padding: 15px;
   position: relative;
-  animation: pulse 2s ease-in-out infinite alternate;
-  
-  @keyframes pulse {
-    from { box-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
-    to { box-shadow: 0 0 20px rgba(255, 68, 68, 0.6); }
-  }
 `;
 
 const EventHeader = styled.div`
@@ -84,14 +75,14 @@ const EventHeader = styled.div`
 `;
 
 const EventName = styled.h3`
-  color: #FF6666;
+  color: #495057;
   margin: 0;
   font-size: 1.1rem;
 `;
 
 const EventDuration = styled.div`
-  background: #FF4444;
-  color: #FFF;
+  background: #dc3545;
+  color: #ffffff;
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 0.8rem;
@@ -99,7 +90,7 @@ const EventDuration = styled.div`
 `;
 
 const EventDescription = styled.p`
-  color: #CCC;
+  color: #6c757d;
   font-size: 0.9rem;
   margin: 8px 0;
   font-style: italic;
@@ -107,11 +98,12 @@ const EventDescription = styled.p`
 `;
 
 const EventEffect = styled.div`
-  background: rgba(0, 0, 0, 0.3);
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
   border-radius: 6px;
   padding: 8px;
   font-size: 0.85rem;
-  color: #FFD700;
+  color: #495057;
   font-weight: bold;
 `;
 
@@ -120,7 +112,7 @@ const HistorySection = styled.div`
 `;
 
 const HistoryTitle = styled.h3`
-  color: #4169E1;
+  color: #495057;
   margin-bottom: 10px;
   font-size: 1.2rem;
 `;
@@ -134,56 +126,56 @@ const HistoryList = styled.div`
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: #f8f9fa;
     border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #4169E1;
+    background: #adb5bd;
     border-radius: 3px;
   }
 `;
 
 const HistoryItem = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 3px solid #4169E1;
+  background: #f8f9fa;
+  border-left: 3px solid #007bff;
   padding: 8px 12px;
   margin-bottom: 8px;
   border-radius: 0 6px 6px 0;
   
   .event-name {
-    color: #FFF;
+    color: #495057;
     font-weight: bold;
     font-size: 0.9rem;
   }
   
   .event-time {
-    color: #AAA;
+    color: #6c757d;
     font-size: 0.8rem;
   }
 `;
 
 const TechInfo = styled.div`
-  background: rgba(65, 105, 225, 0.2);
-  border: 1px solid #4169E1;
+  background: #f8f9fa;
+  border: 1px solid #007bff;
   border-radius: 8px;
   padding: 12px;
   margin-top: 15px;
   
   h4 {
-    color: #4169E1;
+    color: #007bff;
     margin: 0 0 8px 0;
     font-size: 1rem;
   }
   
   .tech-effect {
-    color: #CCC;
+    color: #6c757d;
     font-size: 0.85rem;
     margin: 4px 0;
   }
   
   .tech-value {
-    color: #00FF00;
+    color: #28a745;
     font-weight: bold;
   }
 `;
@@ -191,6 +183,7 @@ const TechInfo = styled.div`
 const Crisis = () => {
   const crisis = useSelector((state) => state.crisis);
   const technology = useSelector((state) => state.technology);
+  const gameState = useSelector((state) => state.game);
 
   const getEffectDescription = (event) => {
     const effect = event.effect;
@@ -295,7 +288,7 @@ const Crisis = () => {
               <HistoryItem key={`history-${event.id}-${index}`}>
                 <div className="event-name">{event.name}</div>
                 <div className="event-time">
-                  Occurred {formatMonth(Date.now() - event.occurredAt)}
+                  Occurred {formatMonth((gameState?.currentMonth || 1) - event.occurredAt)}
                 </div>
               </HistoryItem>
             ))}

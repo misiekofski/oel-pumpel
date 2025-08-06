@@ -18,59 +18,61 @@ import { processResearch } from './store/technologySlice';
 import { checkForCrisis, processActiveEvents } from './store/crisisSlice';
 
 const AppContainer = styled.div`
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: #ffffff;
   min-height: 100vh;
-  color: #ffffff;
+  color: #333333;
   font-family: 'Arial', sans-serif;
 `;
 
 const GameContent = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  padding: 20px;
-  max-width: 1400px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
+  max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 15px;
+    gap: 8px;
+    padding: 8px;
   }
 `;
 
 const GameSection = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 20px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const NextMonthButton = styled.button`
-  background: linear-gradient(45deg, #FFD700, #FFA500);
-  border: none;
-  padding: 15px 30px;
-  border-radius: 25px;
-  color: #000;
-  font-weight: bold;
-  font-size: 18px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: #495057;
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  margin: 20px auto;
+  margin: 15px auto 10px auto;
   display: block;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    background: #e9ecef;
+    border-color: #adb5bd;
   }
   
   &:active {
-    transform: translateY(0);
+    background: #dee2e6;
   }
 `;
 
@@ -201,7 +203,7 @@ function App() {
           alignItems: 'center', 
           height: '100vh',
           fontSize: '24px',
-          color: '#FFD700'
+          color: '#666666'
         }}>
           Loading Drill Baby Drill Empire...
         </div>
@@ -217,6 +219,10 @@ function App() {
     <AppContainer>
       <GameHeader />
       
+      <NextMonthButton onClick={handleNextMonth}>
+        ⏭ Next Month
+      </NextMonthButton>
+      
       <GameContent>
         <GameSection>
           <OilFields />
@@ -228,16 +234,11 @@ function App() {
         
         <GameSection>
           <Crisis />
-        </GameSection>
-        
-        <GameSection>
-          <Continents />
+          <div style={{ marginTop: '20px' }}>
+            <Continents />
+          </div>
         </GameSection>
       </GameContent>
-      
-      <NextMonthButton onClick={handleNextMonth}>
-        🚀 ADVANCE TO NEXT MONTH 🚀
-      </NextMonthButton>
     </AppContainer>
   );
 }

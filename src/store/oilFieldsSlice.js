@@ -6,8 +6,8 @@ const initialState = {
       id: 4, 
       name: 'Backyard Oil Patch', 
       cost: 25000, 
-      yield: 200, 
-      duration: 6, 
+      yield: 400, 
+      duration: 12, 
       description: 'Small operation in your backyard. Even I started somewhere, folks.',
       type: 'budget',
       purchased: false,
@@ -17,8 +17,8 @@ const initialState = {
       id: 1, 
       name: 'Middle Eastern Light', 
       cost: 45000, 
-      yield: 350, 
-      duration: 8, 
+      yield: 700, 
+      duration: 16, 
       description: 'Good oil from the desert. Very hot climate, like my deals.',
       type: 'budget',
       purchased: false,
@@ -28,8 +28,8 @@ const initialState = {
       id: 2, 
       name: 'Canadian Oil Sands', 
       cost: 75000, 
-      yield: 450, 
-      duration: 11, 
+      yield: 900, 
+      duration: 22, 
       description: 'From our neighbors up north. Nice people, but their oil needs work.',
       type: 'standard',
       purchased: false,
@@ -39,8 +39,8 @@ const initialState = {
       id: 3, 
       name: 'North Sea Brent', 
       cost: 120000, 
-      yield: 600, 
-      duration: 12, 
+      yield: 1200, 
+      duration: 24, 
       description: 'European oil that is almost as good as American oil. Almost.',
       type: 'standard',
       purchased: false,
@@ -50,8 +50,8 @@ const initialState = {
       id: 5, 
       name: 'Texas Sweet Crude', 
       cost: 180000, 
-      yield: 750, 
-      duration: 15, 
+      yield: 1500, 
+      duration: 30, 
       description: 'The best crude in America, tremendous quality. Everybody says so.',
       type: 'premium',
       purchased: false,
@@ -61,8 +61,8 @@ const initialState = {
       id: 6, 
       name: 'Alaskan Crude', 
       cost: 250000, 
-      yield: 900, 
-      duration: 18, 
+      yield: 1800, 
+      duration: 36, 
       description: 'From the beautiful Alaskan wilderness. Sarah Palin can see it from her house.',
       type: 'premium',
       purchased: false,
@@ -72,8 +72,8 @@ const initialState = {
       id: 7, 
       name: 'Offshore Gulf Mega-Rig', 
       cost: 400000, 
-      yield: 1200, 
-      duration: 24, 
+      yield: 2400, 
+      duration: 48, 
       description: 'Deep sea drilling, very dangerous. But worth it! Like my presidency.',
       type: 'premium',
       purchased: false,
@@ -182,6 +182,10 @@ const oilFieldsSlice = createSlice({
           field.yield = Math.floor(field.yield * (1 + efficiencyBonus));
         }
       });
+    },
+    
+    resetOilFields: (state) => {
+      return initialState;
     }
   }
 });
@@ -193,7 +197,8 @@ export const {
   resetField,
   applyTechnologyBonus,
   extendFieldLife,
-  updateFieldEfficiency
+  updateFieldEfficiency,
+  resetOilFields
 } = oilFieldsSlice.actions;
 
 export default oilFieldsSlice.reducer;

@@ -5,46 +5,45 @@ import { shipOil, sellOil } from '../store/gameSlice';
 
 const ContinentsContainer = styled.div`
   h2 {
-    color: #FFD700;
+    color: #495057;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 16px;
+    font-size: 1.4rem;
+    font-weight: 600;
   }
 `;
 
 const ContinentGrid = styled.div`
   display: grid;
-  gap: 15px;
-  max-height: 500px;
+  gap: 10px;
+  max-height: 400px;
   overflow-y: auto;
   
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    background: #f8f9fa;
+    border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #FFD700;
-    border-radius: 4px;
+    background: #adb5bd;
+    border-radius: 3px;
   }
 `;
 
 const ContinentCard = styled.div`
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid #32CD32;
-  border-radius: 12px;
-  padding: 15px;
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 12px;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    border-color: #FFD700;
+    border-color: #adb5bd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -52,26 +51,26 @@ const ContinentHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `;
 
 const ContinentInfo = styled.div`
   .name {
-    color: #32CD32;
-    font-size: 1.1rem;
-    font-weight: bold;
+    color: #495057;
+    font-size: 1rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   
   .flag {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
   
   .demand {
-    color: #AAA;
-    font-size: 0.85rem;
+    color: #6c757d;
+    font-size: 0.8rem;
     margin-top: 2px;
   }
 `;
@@ -80,13 +79,13 @@ const PriceInfo = styled.div`
   text-align: right;
   
   .price {
-    color: #FFD700;
-    font-size: 1.1rem;
-    font-weight: bold;
+    color: #28a745;
+    font-size: 1rem;
+    font-weight: 600;
   }
   
   .multiplier {
-    color: #CCC;
+    color: #6c757d;
     font-size: 0.8rem;
   }
 `;
@@ -94,79 +93,77 @@ const PriceInfo = styled.div`
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 12px 0;
+  gap: 8px;
+  margin: 10px 0;
 `;
 
 const StatItem = styled.div`
-  background: rgba(0, 0, 0, 0.3);
-  padding: 8px;
-  border-radius: 6px;
+  background: #f8f9fa;
+  padding: 6px;
+  border-radius: 4px;
   text-align: center;
+  border: 1px solid #e9ecef;
   
   .label {
-    color: #AAA;
-    font-size: 0.75rem;
+    color: #6c757d;
+    font-size: 0.7rem;
     text-transform: uppercase;
+    font-weight: 500;
   }
   
   .value {
-    color: #FFF;
-    font-weight: bold;
-    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.8rem;
   }
 `;
 
 const ActionsContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 6px;
+  margin-top: 10px;
 `;
 
 const ActionButton = styled.button`
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  padding: 6px 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
   text-transform: uppercase;
   
   ${props => {
-    if (props.variant === 'ship') {
-      if (props.disabled) {
-        return `
-          background: #666;
-          color: #999;
-          cursor: not-allowed;
-        `;
-      }
+    if (props.disabled) {
       return `
-        background: linear-gradient(45deg, #4169E1, #00BFFF);
-        color: #FFF;
+        background: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+        border-color: #e9ecef;
+      `;
+    }
+    if (props.variant === 'ship') {
+      return `
+        background: #007bff;
+        color: #ffffff;
+        border-color: #007bff;
         
         &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 3px 8px rgba(65, 105, 225, 0.4);
+          background: #0056b3;
+          border-color: #0056b3;
         }
       `;
     } else if (props.variant === 'sell') {
-      if (props.disabled) {
-        return `
-          background: #666;
-          color: #999;
-          cursor: not-allowed;
-        `;
-      }
       return `
-        background: linear-gradient(45deg, #32CD32, #00FF32);
-        color: #000;
+        background: #28a745;
+        color: #ffffff;
+        border-color: #28a745;
         
         &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 3px 8px rgba(50, 205, 50, 0.4);
+          background: #1e7e34;
+          border-color: #1e7e34;
         }
       `;
     }
@@ -175,48 +172,49 @@ const ActionButton = styled.button`
 
 const InputGroup = styled.div`
   display: flex;
-  gap: 8px;
-  margin: 8px 0;
+  gap: 6px;
+  margin: 6px 0;
   align-items: center;
   
   input {
     flex: 1;
-    padding: 6px 8px;
-    border: 1px solid #666;
+    padding: 4px 6px;
+    border: 1px solid #ced4da;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.3);
-    color: #FFF;
-    font-size: 0.85rem;
+    background: #ffffff;
+    color: #495057;
+    font-size: 0.8rem;
     
     &:focus {
       outline: none;
-      border-color: #FFD700;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
     }
   }
   
   label {
-    color: #CCC;
-    font-size: 0.8rem;
-    min-width: 60px;
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 `;
 
 const TransitInfo = styled.div`
-  background: rgba(255, 165, 0, 0.2);
-  border: 1px solid #FFA500;
-  border-radius: 6px;
-  padding: 8px;
-  margin: 8px 0;
-  font-size: 0.8rem;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 6px;
+  margin: 6px 0;
+  font-size: 0.75rem;
   
   .transit-title {
-    color: #FFA500;
-    font-weight: bold;
-    margin-bottom: 4px;
+    color: #856404;
+    font-weight: 600;
+    margin-bottom: 3px;
   }
   
   .transit-item {
-    color: #CCC;
+    color: #6c757d;
     margin: 2px 0;
   }
 `;

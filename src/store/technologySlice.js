@@ -5,7 +5,7 @@ const initialState = {
     {
       id: 1,
       name: 'Advanced Drilling',
-      cost: 15000,
+      cost: 5000,
       description: 'I understand drilling, very complex stuff. Increases oil yield by 15%.',
       effect: { type: 'yield', value: 0.15 },
       researched: false,
@@ -14,7 +14,7 @@ const initialState = {
     {
       id: 2,
       name: 'Seismic Surveying',
-      cost: 20000,
+      cost: 6000,
       description: 'We have the best surveys, tremendous technology. Find new oil deposits faster.',
       effect: { type: 'discovery', value: 0.25 },
       researched: false,
@@ -23,7 +23,7 @@ const initialState = {
     {
       id: 3,
       name: 'Environmental Protection',
-      cost: 25000,
+      cost: 7000,
       description: 'Nobody loves the environment more than me. Reduces crisis probability by 20%.',
       effect: { type: 'crisis_reduction', value: 0.2 },
       researched: false,
@@ -32,7 +32,7 @@ const initialState = {
     {
       id: 4,
       name: 'Enhanced Recovery',
-      cost: 35000,
+      cost: 10000,
       description: 'Like my memory, enhanced and perfect. Extends field life by 3 months.',
       effect: { type: 'field_extension', value: 3 },
       researched: false,
@@ -41,7 +41,7 @@ const initialState = {
     {
       id: 5,
       name: 'Automation Systems',
-      cost: 40000,
+      cost: 12000,
       description: 'Robots doing the work, like my attention span - very efficient. Reduces maintenance by 30%.',
       effect: { type: 'maintenance_reduction', value: 0.3 },
       researched: false,
@@ -50,7 +50,7 @@ const initialState = {
     {
       id: 6,
       name: 'Deep Sea Technology',
-      cost: 200000,
+      cost: 15000,
       description: 'Going deeper than my understanding of quantum physics. Unlocks offshore premium fields.',
       effect: { type: 'unlock_premium', value: 'offshore' },
       researched: false,
@@ -59,7 +59,7 @@ const initialState = {
     {
       id: 7,
       name: 'Market Analytics',
-      cost: 80000,
+      cost: 8000,
       description: 'Better than my Twitter analytics. Improves market trend predictions.',
       effect: { type: 'market_prediction', value: 0.5 },
       researched: false,
@@ -68,7 +68,7 @@ const initialState = {
     {
       id: 8,
       name: 'Crisis Management',
-      cost: 110000,
+      cost: 12000,
       description: 'I handle crises better than anyone. Reduces crisis impact by 40%.',
       effect: { type: 'crisis_mitigation', value: 0.4 },
       researched: false,
@@ -77,7 +77,7 @@ const initialState = {
     {
       id: 9,
       name: 'Global Logistics',
-      cost: 180000,
+      cost: 16000,
       description: 'Worldwide shipping, like my brand recognition. Reduces shipping time by 1 month.',
       effect: { type: 'shipping_speed', value: 1 },
       researched: false,
@@ -86,7 +86,7 @@ const initialState = {
     {
       id: 10,
       name: 'Quantum Computing',
-      cost: 300000,
+      cost: 22000,
       description: 'Very complicated, I understand it perfectly. Optimizes everything by 25%.',
       effect: { type: 'global_efficiency', value: 0.25 },
       researched: false,
@@ -95,7 +95,7 @@ const initialState = {
     {
       id: 11,
       name: 'Renewable Integration',
-      cost: 250000,
+      cost: 18000,
       description: 'Clean energy backup, like my conscience. Provides stable income during crises.',
       effect: { type: 'crisis_insurance', value: 50000 },
       researched: false,
@@ -104,7 +104,7 @@ const initialState = {
     {
       id: 12,
       name: 'AI Optimization',
-      cost: 400000,
+      cost: 25000,
       description: 'Artificial Intelligence, almost as smart as me. Maximizes all operations.',
       effect: { type: 'ultimate_optimization', value: 0.5 },
       researched: false,
@@ -115,7 +115,7 @@ const initialState = {
   researchQueue: [],
   activeResearch: null,
   researchProgress: 0,
-  researchPointsPerMonth: 10,
+  researchPointsPerMonth: 100,
   totalResearchPoints: 0,
   
   technologyEffects: {
@@ -191,7 +191,11 @@ const technologySlice = createSlice({
     
     upgradeResearchCapacity: (state, action) => {
       const cost = action.payload.cost;
-      state.researchPointsPerMonth += 5;
+      state.researchPointsPerMonth += 20;
+    },
+    
+    resetTechnology: (state) => {
+      return initialState;
     },
     
     applyTechnologyBonus: (state, action) => {
@@ -232,49 +236,12 @@ const technologySlice = createSlice({
   }
 });
 
-// Helper function to apply technology effects
-function applyTechnologyEffect(state, technology) {
-  const { type, value } = technology.effect;
-  
-  switch (type) {
-    case 'yield':
-      state.technologyEffects.yieldBonus += value;
-      break;
-    case 'discovery':
-      state.technologyEffects.discoveryBonus += value;
-      break;
-    case 'crisis_reduction':
-      state.technologyEffects.crisisReduction += value;
-      break;
-    case 'field_extension':
-      state.technologyEffects.fieldExtension += value;
-      break;
-    case 'maintenance_reduction':
-      state.technologyEffects.maintenanceReduction += value;
-      break;
-    case 'crisis_mitigation':
-      state.technologyEffects.crisisMitigation += value;
-      break;
-    case 'shipping_speed':
-      state.technologyEffects.shippingSpeedBonus += value;
-      break;
-    case 'global_efficiency':
-      state.technologyEffects.globalEfficiency += value;
-      break;
-    case 'crisis_insurance':
-      state.technologyEffects.crisisInsurance += value;
-      break;
-    case 'market_prediction':
-      state.technologyEffects.marketPrediction += value;
-      break;
-  }
-}
-
 export const {
   startResearch,
   processResearch,
   cancelResearch,
   upgradeResearchCapacity,
+  resetTechnology,
   applyTechnologyBonus
 } = technologySlice.actions;
 
