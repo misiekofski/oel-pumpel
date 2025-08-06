@@ -3,46 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oil Empire - Strategic Game</title>
+    <title>Drill Baby Drill - Make America Energy Independent Again!</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-container">
         <header class="game-header">
+            <div class="trump-header">
+                <img src="https://static.politico.com/dims4/default/f2ff9bc/2147483647/strip/true/crop/1160x773+0+0/resize/1160x773!/format/webp/quality/90/?url=https%3A%2F%2Fstatic.politico.com%2F4a%2Fec%2F2eb402004cdea3c9b0ad8af97d3e%2Ftrump-cartoon-2-1160.jpg" alt="Trump" class="trump-image">
+                <div class="trump-title">
+                    <h1>🛢️ DRILL BABY DRILL! 🇺🇸</h1>
+                    <p class="trump-slogan">Make America Energy Independent Again!</p>
+                </div>
+            </div>
             <div class="header-top">
-                <h1>🛢️ Oil Empire</h1>
                 <div class="game-info">
                     <div class="date-display">
-                        <span>Date: <span id="current-date">January 2024</span></span>
+                        <span>📅 Date: <span id="current-date">January 2024</span></span>
                     </div>
                     <div class="money-display">
-                        <span>💰 Money: $<span id="money">100000</span></span>
+                        <span>� Trump Bucks: $<span id="money">100000</span></span>
                     </div>
                     <div class="goal-display">
-                        <span>🎯 Goal: Reach 2050 with $10M+</span>
+                        <span>🎯 YUGE Goal: Build a $10M+ Energy Empire by 2050!</span>
                     </div>
                 </div>
             </div>
             
             <div class="header-bottom">
                 <div class="game-controls">
-                    <button id="next-month" class="next-month-btn">⏭️ Next Month</button>
-                    <button id="save-game" class="save-btn">💾 Save Game</button>
-                    <button id="clear-save" class="clear-save-btn">🗑️ Clear Save</button>
-                    <button id="debug-render" class="save-btn">🔄 Debug Render</button>
+                    <button id="next-month" class="next-month-btn">⏭️ Next Month (Make It Happen!)</button>
+                    <button id="save-game" class="save-btn">💾 Save the Deal</button>
+                    <button id="clear-save" class="clear-save-btn">🗑️ You're Fired!</button>
+                    <button id="debug-render" class="save-btn">🔄 The Art of the Debug</button>
                 </div>
                 
                 <div class="achievements-section">
-                    <h3>🏆 Achievements (<span id="achievement-count">0</span>/12)</h3>
+                    <h3>🏆 TREMENDOUS Achievements (<span id="achievement-count">0</span>/12)</h3>
                     <div id="achievements-list" class="achievements-grid">
                         <!-- Achievements will be populated by JavaScript -->
                     </div>
                 </div>
                 
                 <div class="game-log">
-                    <h3>📜 Game Log</h3>
+                    <h3>� Trump News Network</h3>
                     <div id="log-content">
-                        <p>Welcome to Oil Empire! Start drilling and build your oil business.</p>
+                        <p>Welcome to DRILL BABY DRILL! We're gonna make the best oil deals, believe me!</p>
                     </div>
                 </div>
             </div>
@@ -51,10 +57,10 @@
         <main class="game-main">
             <div class="left-panel">
                 <section class="oil-fields-section">
-                    <h2>🏭 Oil Fields Overview</h2>
+                    <h2>🏭 Trump Oil Fields - The Best Fields!</h2>
                     <div class="fields-info">
-                        <p>Total Oil Fields: <span id="owned-fields">0</span></p>
-                        <p>Monthly Production: <span id="total-production">0</span> barrels</p>
+                        <p>Total YUGE Oil Fields: <span id="owned-fields">0</span></p>
+                        <p>Monthly Production (WINNING!): <span id="total-production">0</span> barrels</p>
                         <div id="field-summary" class="field-summary" style="display: none;">
                             <!-- Field summary will be populated by JavaScript -->
                         </div>
@@ -62,30 +68,30 @@
                 </section>
 
                 <section class="drilling-section">
-                    <h2>🔧 Drilling Equipment</h2>
+                    <h2>🔧 TREMENDOUS Drilling Equipment</h2>
                     <div class="drilling-info">
-                        <p>Equipment Level: <span id="equipment-level">1</span></p>
-                        <p>Production per Field: <span id="oil-production">100</span> barrels/month</p>
-                        <p>Current Oil Stock: <span id="oil-stock">0</span> barrels</p>
+                        <p>Equipment Level (Best in Class): <span id="equipment-level">1</span></p>
+                        <p>Production per Field (YUGE Numbers): <span id="oil-production">100</span> barrels/month</p>
+                        <p>Current Oil Stock (Liquid Gold): <span id="oil-stock">0</span> barrels</p>
                     </div>
                     
                     <div class="actions">
-                        <button id="upgrade-equipment" class="action-btn">🔧 Upgrade Equipment ($<span id="upgrade-cost">50000</span>)</button>
+                        <button id="upgrade-equipment" class="action-btn">🔧 Upgrade to Gold Standard ($<span id="upgrade-cost">50000</span>)</button>
                     </div>
                 </section>
 
                 <section class="field-types-section">
-                    <h2>🏭 Oil Field Types</h2>
+                    <h2>🏭 Premium Trump Oil Fields</h2>
                     <div id="field-types-list" class="field-types-grid">
                         <!-- Field types will be populated by JavaScript -->
                     </div>
                 </section>
 
                 <section class="technology-section">
-                    <h2>🔬 Research & Development</h2>
+                    <h2>🔬 Trump University R&D Department</h2>
                     <div class="research-status">
                         <div id="current-research" style="display: none;">
-                            <h4>Current Research:</h4>
+                            <h4>Current Research (Making Science Great Again):</h4>
                             <div class="research-progress">
                                 <span id="research-name"></span>
                                 <div class="progress-bar">
@@ -101,86 +107,86 @@
                 </section>
 
                 <section class="crisis-section">
-                    <h2>⚠️ Crisis Management</h2>
+                    <h2>⚠️ Deal with the Fake News Crises</h2>
                     <div id="active-crises" class="active-crises">
                         <!-- Active crises will be populated by JavaScript -->
                     </div>
                     <div class="crisis-info">
-                        <p>Risk Level: <span id="crisis-risk">Low</span></p>
-                        <button id="perform-maintenance" class="action-btn">🔧 Perform Field Maintenance ($<span id="maintenance-cost">0</span>)</button>
+                        <p>Risk Level (We Have the Best Risk): <span id="crisis-risk">Low</span></p>
+                        <button id="perform-maintenance" class="action-btn">🔧 Fix It Like a Boss ($<span id="maintenance-cost">0</span>)</button>
                     </div>
                 </section>
 
                 <section class="market-section">
-                    <h2>📊 Oil Market</h2>
+                    <h2>📊 Trump Oil Market (The Best Market!)</h2>
                     <div class="market-info">
-                        <p>Current Oil Price: $<span id="base-oil-price">50</span>/barrel</p>
-                        <p>Market Trend: <span id="market-trend">Stable</span></p>
+                        <p>Current Oil Price (Art of the Deal): $<span id="base-oil-price">50</span>/barrel</p>
+                        <p>Market Trend (Always Winning): <span id="market-trend">Stable</span></p>
                     </div>
                 </section>
             </div>
 
             <div class="right-panel">
                 <section class="continents-section">
-                    <h2>🌍 Continental Markets</h2>
+                    <h2>🌍 TRUMP Global Energy Markets</h2>
                     <div class="continents-grid">
                         <div class="continent" data-continent="north-america">
-                            <h3>🇺🇸 North America</h3>
+                            <h3>🇺🇸 AMERICA FIRST!</h3>
                             <p>Price: $<span class="continent-price">55</span>/barrel</p>
-                            <p>Demand: <span class="continent-demand">High</span></p>
+                            <p>Demand: <span class="continent-demand">YUGE</span></p>
                             <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
                             <p>Available: <span class="oil-available">0</span> barrels</p>
                             <div class="continent-actions">
-                                <button class="ship-btn" data-continent="north-america">🚢 Ship Oil Here</button>
-                                <button class="sell-btn" data-continent="north-america">💰 Sell Available Oil</button>
+                                <button class="ship-btn" data-continent="north-america">🚢 Ship to USA</button>
+                                <button class="sell-btn" data-continent="north-america">💰 Make the Deal</button>
                             </div>
                         </div>
                         
                         <div class="continent" data-continent="europe">
-                            <h3>🇪🇺 Europe</h3>
+                            <h3>🇪🇺 Europe (Needs Our Oil)</h3>
                             <p>Price: $<span class="continent-price">52</span>/barrel</p>
                             <p>Demand: <span class="continent-demand">Medium</span></p>
                             <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
                             <p>Available: <span class="oil-available">0</span> barrels</p>
                             <div class="continent-actions">
-                                <button class="ship-btn" data-continent="europe">🚢 Ship Oil Here</button>
-                                <button class="sell-btn" data-continent="europe">💰 Sell Available Oil</button>
+                                <button class="ship-btn" data-continent="europe">🚢 Ship to Europe</button>
+                                <button class="sell-btn" data-continent="europe">💰 Close the Deal</button>
                             </div>
                         </div>
                         
                         <div class="continent" data-continent="asia">
-                            <h3>🇯🇵 Asia</h3>
+                            <h3>🇯🇵 Asia (Great Trade Partner)</h3>
                             <p>Price: $<span class="continent-price">48</span>/barrel</p>
                             <p>Demand: <span class="continent-demand">Very High</span></p>
                             <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
                             <p>Available: <span class="oil-available">0</span> barrels</p>
                             <div class="continent-actions">
-                                <button class="ship-btn" data-continent="asia">🚢 Ship Oil Here</button>
-                                <button class="sell-btn" data-continent="asia">💰 Sell Available Oil</button>
+                                <button class="ship-btn" data-continent="asia">🚢 Ship to Asia</button>
+                                <button class="sell-btn" data-continent="asia">💰 Win-Win Deal</button>
                             </div>
                         </div>
                         
                         <div class="continent" data-continent="africa">
-                            <h3>🌍 Africa</h3>
+                            <h3>🌍 Africa (Tremendous Potential)</h3>
                             <p>Price: $<span class="continent-price">45</span>/barrel</p>
                             <p>Demand: <span class="continent-demand">Low</span></p>
                             <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
                             <p>Available: <span class="oil-available">0</span> barrels</p>
                             <div class="continent-actions">
-                                <button class="ship-btn" data-continent="africa">🚢 Ship Oil Here</button>
-                                <button class="sell-btn" data-continent="africa">💰 Sell Available Oil</button>
+                                <button class="ship-btn" data-continent="africa">🚢 Ship to Africa</button>
+                                <button class="sell-btn" data-continent="africa">💰 Smart Deal</button>
                             </div>
                         </div>
                         
                         <div class="continent" data-continent="south-america">
-                            <h3>🇧🇷 South America</h3>
+                            <h3>🇧🇷 South America (Good Neighbors)</h3>
                             <p>Price: $<span class="continent-price">50</span>/barrel</p>
                             <p>Demand: <span class="continent-demand">Medium</span></p>
                             <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
                             <p>Available: <span class="oil-available">0</span> barrels</p>
                             <div class="continent-actions">
-                                <button class="ship-btn" data-continent="south-america">🚢 Ship Oil Here</button>
-                                <button class="sell-btn" data-continent="south-america">💰 Sell Available Oil</button>
+                                <button class="ship-btn" data-continent="south-america">🚢 Ship South</button>
+                                <button class="sell-btn" data-continent="south-america">💰 Best Deal</button>
                             </div>
                         </div>
                     </div>
@@ -191,14 +197,14 @@
         <!-- Ship Oil Modal -->
         <div id="ship-modal" class="modal">
             <div class="modal-content">
-                <h3>Ship Oil to <span id="ship-modal-continent"></span></h3>
-                <p>Shipping Time: <span id="ship-time">2</span> months</p>
+                <h3>Ship Oil to <span id="ship-modal-continent"></span> (Trump Express Shipping)</h3>
+                <p>Shipping Time: <span id="ship-time">2</span> months (Lightning Fast!)</p>
                 <p>Available Oil: <span id="ship-modal-available"></span> barrels</p>
                 <div class="ship-form">
-                    <label for="ship-amount">Amount to ship:</label>
+                    <label for="ship-amount">Amount to ship (Make it YUGE!):</label>
                     <input type="number" id="ship-amount" min="0" max="0">
-                    <button id="confirm-ship">Confirm Shipment</button>
-                    <button id="cancel-ship">Cancel</button>
+                    <button id="confirm-ship">Confirm Shipment (Do It!)</button>
+                    <button id="cancel-ship">Cancel (Not My Style)</button>
                 </div>
             </div>
         </div>
@@ -206,14 +212,14 @@
         <!-- Sell Oil Modal -->
         <div id="sell-modal" class="modal">
             <div class="modal-content">
-                <h3>Sell Oil in <span id="modal-continent"></span></h3>
-                <p>Price: $<span id="modal-price"></span>/barrel</p>
+                <h3>Sell Oil in <span id="modal-continent"></span> (The Art of the Deal)</h3>
+                <p>Price: $<span id="modal-price"></span>/barrel (Best Price Ever!)</p>
                 <p>Available Oil: <span id="modal-available"></span> barrels</p>
                 <div class="sell-form">
-                    <label for="sell-amount">Amount to sell:</label>
+                    <label for="sell-amount">Amount to sell (Maximum Profit!):</label>
                     <input type="number" id="sell-amount" min="0" max="0">
-                    <button id="confirm-sell">Confirm Sale</button>
-                    <button id="cancel-sell">Cancel</button>
+                    <button id="confirm-sell">Confirm Sale (Make the Deal!)</button>
+                    <button id="cancel-sell">Cancel (Weak!)</button>
                 </div>
             </div>
         </div>
@@ -223,40 +229,40 @@
             <div class="modal-content">
                 <h2 id="game-over-title">Game Over</h2>
                 <p id="game-over-message"></p>
-                <button id="restart-game">Start New Game</button>
+                <button id="restart-game">Start New Empire (Make America Great Again!)</button>
             </div>
         </div>
 
         <!-- Technology Research Modal -->
         <div id="research-modal" class="modal">
             <div class="modal-content">
-                <h3>Research Technology</h3>
+                <h3>Research Technology (Trump University Style)</h3>
                 <div id="research-details">
                     <h4 id="research-tech-name"></h4>
                     <p id="research-tech-description"></p>
-                    <p>Cost: $<span id="research-tech-cost"></span></p>
-                    <p>Research Time: <span id="research-tech-time"></span> months</p>
+                    <p>Cost: $<span id="research-tech-cost"></span> (Investment in Excellence)</p>
+                    <p>Research Time: <span id="research-tech-time"></span> months (Fast Track!)</p>
                     <div id="research-prerequisites"></div>
                 </div>
-                <button id="confirm-research">Start Research</button>
-                <button id="cancel-research">Cancel</button>
+                <button id="confirm-research">Start Research (Do It Big!)</button>
+                <button id="cancel-research">Cancel (Not Winners!)</button>
             </div>
         </div>
 
         <!-- Field Type Purchase Modal -->
         <div id="field-type-modal" class="modal">
             <div class="modal-content">
-                <h3>Purchase Oil Field</h3>
+                <h3>Purchase Premium Trump Oil Field</h3>
                 <div id="field-type-details">
                     <h4 id="field-type-name"></h4>
                     <p id="field-type-description"></p>
-                    <p>Cost: $<span id="field-type-cost"></span></p>
-                    <p>Base Production: <span id="field-type-production"></span> barrels/month</p>
-                    <p>Maintenance: $<span id="field-type-maintenance"></span>/month</p>
+                    <p>Cost: $<span id="field-type-cost"></span> (Quality Investment)</p>
+                    <p>Base Production: <span id="field-type-production"></span> barrels/month (YUGE Numbers!)</p>
+                    <p>Maintenance: $<span id="field-type-maintenance"></span>/month (Worth Every Penny)</p>
                     <div id="field-type-requirements"></div>
                 </div>
-                <button id="confirm-field-purchase">Purchase Field</button>
-                <button id="cancel-field-purchase">Cancel</button>
+                <button id="confirm-field-purchase">Purchase Field (Buy American!)</button>
+                <button id="cancel-field-purchase">Cancel (Sad!)</button>
             </div>
         </div>
     </div>
