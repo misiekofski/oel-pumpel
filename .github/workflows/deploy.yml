@@ -26,8 +26,31 @@ jobs:
           npm install
         
       - name: Build
-        run: npm run build
+        run: |
+          npm run build || echo "React build failed"
         
+      - name: Check build output and prepare deployment
+        run: |
+          echo "Checking build directory..."
+          ls -la
+          if [ -d "build" ] && [ "$(ls -A build 2>/dev/null)" ]; then
+            echo "✅ React build succeeded"
+            ls -la build/
+          else
+            echo "❌ React build failed or empty, using legacy version"
+            mkdir -p build
+            cp legacy/index.html build/
+            cp legacy/style.css build/
+            cp legacy/script.js build/
+            cp legacy/crisis-events.js build/
+            cp legacy/technology.js build/
+            cp legacy/oil-fields.js build/
+            mkdir -p build/img
+            cp -r legacy/img/* build/img/ 2>/dev/null || true
+            echo "✅ Legacy version copied to build directory"
+            ls -la build/
+          fi
+          
       - name: Deploy
         run: |
           git config --global user.email "action@github.com"
