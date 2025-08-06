@@ -66,43 +66,43 @@ class OilEmpireGame {
     getAchievementsList() {
         return {
             'oil_baron': {
-                name: '🛢️ Oil Baron',
-                description: 'Drill over 100,000 barrels total',
+                name: '🛢️ Trump Oil Baron',
+                description: 'Drill over 100,000 barrels total - YUGE numbers!',
                 condition: () => this.gameState.achievements.totalDrilled >= 100000
             },
             'millionaire': {
-                name: '💰 Millionaire',
-                description: 'Have $5,000,000 in your bank account',
+                name: '💰 Art of the Deal Millionaire',
+                description: 'Have $5,000,000 in your account - We make the best deals!',
                 condition: () => this.gameState.achievements.maxMoney >= 5000000
             },
             'tech_master': {
-                name: '🔧 Tech Master',
-                description: 'Upgrade drilling equipment 10+ times',
+                name: '🔧 Technology Genius',
+                description: 'Upgrade equipment 10+ times - Nobody knows tech like us!',
                 condition: () => this.gameState.equipmentLevel >= 11
             },
             'land_owner': {
-                name: '🏭 Land Owner',
-                description: 'Own 25 oil fields',
+                name: '🏭 Real Estate Mogul',
+                description: 'Own 25 oil fields - The best properties, tremendous locations!',
                 condition: () => this.gameState.ownedFields >= 25
             },
             'early_bird': {
-                name: '⏰ Early Bird',
-                description: 'Reach $1M before 2030',
+                name: '⏰ Lightning Fast Winner',
+                description: 'Reach $1M before 2030 - Speed and efficiency, that\'s how we win!',
                 condition: () => this.gameState.money >= 1000000 && this.gameState.currentYear < 2030
             },
             'speed_runner': {
-                name: '🏃 Speed Runner',
-                description: 'Win the game before 2040',
+                name: '🏃 Ultimate Champion',
+                description: 'Win before 2040 - We win fast, we win big!',
                 condition: () => this.gameState.won && this.gameState.currentYear < 2040
             },
             'oil_trader': {
-                name: '📈 Oil Trader',
-                description: 'Sell over 500,000 barrels total',
+                name: '📈 Master Negotiator',
+                description: 'Sell over 500,000 barrels total - Nobody makes deals like us!',
                 condition: () => this.gameState.achievements.totalOilSold >= 500000
             },
             'global_empire': {
-                name: '🌍 Global Empire',
-                description: 'Have oil available in all 5 continents simultaneously',
+                name: '🌍 Global Energy Dominator',
+                description: 'Have oil in all 5 continents - We\'re everywhere, winning everywhere!',
                 condition: () => {
                     const continents = Object.keys(this.gameState.continentalOil);
                     return continents.every(continent => 
@@ -111,8 +111,8 @@ class OilEmpireGame {
                 }
             },
             'pipeline_master': {
-                name: '🚢 Pipeline Master',
-                description: 'Have 50,000+ barrels in transit',
+                name: '🚢 Logistics Legend',
+                description: 'Have 50,000+ barrels in transit - The best supply chain in history!',
                 condition: () => {
                     let totalInTransit = 0;
                     Object.values(this.gameState.continentalOil).forEach(continent => {
@@ -122,18 +122,18 @@ class OilEmpireGame {
                 }
             },
             'survivor': {
-                name: '💪 Survivor',
-                description: 'Play for 20+ years (240+ months)',
+                name: '💪 Never Give Up Champion',
+                description: 'Play for 20+ years - Persistence and determination!',
                 condition: () => this.gameState.achievements.monthsPlayed >= 240
             },
             'mogul': {
-                name: '👑 Oil Mogul',
-                description: 'Reach the maximum equipment level (20)',
+                name: '👑 Energy Emperor',
+                description: 'Reach max equipment level (20) - The absolute best equipment!',
                 condition: () => this.gameState.equipmentLevel >= 20
             },
             'steady_growth': {
-                name: '📊 Steady Growth',
-                description: 'Have 100,000+ barrels production per month',
+                name: '📊 Production Powerhouse',
+                description: 'Have 100,000+ barrels/month - Massive, beautiful production!',
                 condition: () => this.getTotalProduction() >= 100000
             }
         };
@@ -265,7 +265,7 @@ class OilEmpireGame {
             console.log('New features initialization complete');
         }, 100);
         
-        this.addToLog('Welcome to Oil Empire! Buy oil fields and research new technologies to start your business.');
+        this.addToLog('Welcome to DRILL BABY DRILL! We\'re gonna build the greatest oil empire in history, believe me! Start buying premium fields and research the best technologies. We\'re gonna win so much, you\'re gonna get tired of winning!');
     }
     
     setupEventListeners() {
@@ -333,11 +333,11 @@ class OilEmpireGame {
         if (this.gameState.money >= upgradeCost) {
             this.gameState.money -= upgradeCost;
             this.gameState.equipmentLevel++;
-            this.addToLog(`Upgraded equipment to level ${this.gameState.equipmentLevel} for $${upgradeCost.toLocaleString()}.`);
+            this.addToLog(`TREMENDOUS upgrade! Equipment now level ${this.gameState.equipmentLevel} for $${upgradeCost.toLocaleString()}. We have the best equipment, believe me!`);
             this.updateDisplay();
             this.saveGameState();
         } else {
-            this.addToLog(`Not enough money to upgrade equipment. Need $${upgradeCost.toLocaleString()}.`);
+            this.addToLog(`We need more Trump Bucks! Upgrade costs $${upgradeCost.toLocaleString()}. Time to make some deals!`);
         }
     }
     
@@ -1027,7 +1027,7 @@ class OilEmpireGame {
         this.renderFieldTypes();
         this.renderTechnologies();
         this.renderActiveCrises();
-        this.addToLog('New game started! Build your oil empire, research new technologies, and manage crises!');
+        this.addToLog('New TREMENDOUS game started! We\'re gonna build the most beautiful oil empire, research the best technologies, and handle any crisis like a boss! Make America Energy Independent Again!');
     }
     
     renderAchievements() {
