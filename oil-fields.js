@@ -3,7 +3,7 @@ class OilFieldManager {
         this.fieldTypes = {
             'conventional': {
                 name: '🏭 Conventional Field',
-                description: 'Standard oil field with reliable production',
+                description: 'Standard field. Very reliable. I know conventional, best conventional.',
                 baseCost: 25000,
                 costMultiplier: 1.0,
                 baseProduction: 100,
@@ -16,7 +16,7 @@ class OilFieldManager {
             },
             'offshore': {
                 name: '🌊 Offshore Field',
-                description: 'Deep sea drilling with higher yield but increased costs',
+                description: 'Deep sea drilling. Higher yield, like my IQ. Very deep, very smart.',
                 baseCost: 75000,
                 costMultiplier: 2.5,
                 baseProduction: 200,
@@ -30,7 +30,7 @@ class OilFieldManager {
             },
             'shale': {
                 name: '⛰️ Shale Field',
-                description: 'Fracking operation with high initial yield but rapid depletion',
+                description: 'Fracking operation. High yield but depletes fast, like my attention span.',
                 baseCost: 40000,
                 costMultiplier: 1.4,
                 baseProduction: 150,
@@ -43,7 +43,7 @@ class OilFieldManager {
             },
             'arctic': {
                 name: '🧊 Arctic Field',
-                description: 'Extreme environment drilling with massive reserves',
+                description: 'Extreme drilling. Massive reserves, like my ego. Very cold, very profitable.',
                 baseCost: 120000,
                 costMultiplier: 3.0,
                 baseProduction: 300,
@@ -57,7 +57,7 @@ class OilFieldManager {
             },
             'heavy_oil': {
                 name: '🛢️ Heavy Oil Field',
-                description: 'Viscous oil requiring special processing but very profitable',
+                description: 'Viscous oil, very thick. Like my real estate deals - heavy but profitable.',
                 baseCost: 60000,
                 costMultiplier: 1.8,
                 baseProduction: 80,
@@ -71,7 +71,7 @@ class OilFieldManager {
             },
             'experimental': {
                 name: '🔬 Experimental Field',
-                description: 'Cutting-edge extraction technology with unpredictable results',
+                description: 'Cutting-edge tech. Unpredictable results, like my tweets. Could be YUGE!',
                 baseCost: 200000,
                 costMultiplier: 4.0,
                 baseProduction: 500,
