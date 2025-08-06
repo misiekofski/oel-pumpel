@@ -12,6 +12,16 @@ class OilEmpireGame {
             gameOver: false,
             won: false,
             
+            // Achievements tracking
+            achievements: {
+                unlocked: new Set(),
+                totalDrilled: 0,
+                maxMoney: 0,
+                totalFieldsPurchased: 0,
+                totalOilSold: 0,
+                monthsPlayed: 0
+            },
+            
             // Continental oil tracking
             continentalOil: {
                 'north-america': { available: 0, inTransit: [] },
@@ -37,10 +47,107 @@ class OilEmpireGame {
         this.init();
     }
     
+    // Achievements definitions
+    getAchievementsList() {
+        return {
+            'oil_baron': {
+                name: '🛢️ Oil Baron',
+                description: 'Drill over 100,000 barrels total',
+                condition: () => this.gameState.achievements.totalDrilled >= 100000
+            },
+            'millionaire': {
+                name: '💰 Millionaire',
+                description: 'Have $5,000,000 in your bank account',
+                condition: () => this.gameState.achievements.maxMoney >= 5000000
+            },
+            'tech_master': {
+                name: '🔧 Tech Master',
+                description: 'Upgrade drilling equipment 10+ times',
+                condition: () => this.gameState.equipmentLevel >= 11
+            },
+            'land_owner': {
+                name: '🏭 Land Owner',
+                description: 'Own 25 oil fields',
+                condition: () => this.gameState.ownedFields >= 25
+            },
+            'early_bird': {
+                name: '⏰ Early Bird',
+                description: 'Reach $1M before 2030',
+                condition: () => this.gameState.money >= 1000000 && this.gameState.currentYear < 2030
+            },
+            'speed_runner': {
+                name: '🏃 Speed Runner',
+                description: 'Win the game before 2040',
+                condition: () => this.gameState.won && this.gameState.currentYear < 2040
+            },
+            'oil_trader': {
+                name: '📈 Oil Trader',
+                description: 'Sell over 500,000 barrels total',
+                condition: () => this.gameState.achievements.totalOilSold >= 500000
+            },
+            'global_empire': {
+                name: '🌍 Global Empire',
+                description: 'Have oil available in all 5 continents simultaneously',
+                condition: () => {
+                    const continents = Object.keys(this.gameState.continentalOil);
+                    return continents.every(continent => 
+                        this.gameState.continentalOil[continent].available > 0
+                    );
+                }
+            },
+            'pipeline_master': {
+                name: '🚢 Pipeline Master',
+                description: 'Have 50,000+ barrels in transit',
+                condition: () => {
+                    let totalInTransit = 0;
+                    Object.values(this.gameState.continentalOil).forEach(continent => {
+                        totalInTransit += continent.inTransit.reduce((sum, shipment) => sum + shipment.amount, 0);
+                    });
+                    return totalInTransit >= 50000;
+                }
+            },
+            'survivor': {
+                name: '💪 Survivor',
+                description: 'Play for 20+ years (240+ months)',
+                condition: () => this.gameState.achievements.monthsPlayed >= 240
+            },
+            'mogul': {
+                name: '👑 Oil Mogul',
+                description: 'Reach the maximum equipment level (20)',
+                condition: () => this.gameState.equipmentLevel >= 20
+            },
+            'steady_growth': {
+                name: '📊 Steady Growth',
+                description: 'Have 100,000+ barrels production per month',
+                condition: () => this.getTotalProduction() >= 100000
+            }
+        };
+    }
+    
+    checkAchievements() {
+        const achievements = this.getAchievementsList();
+        let newAchievements = [];
+        
+        for (const [key, achievement] of Object.entries(achievements)) {
+            if (!this.gameState.achievements.unlocked.has(key) && achievement.condition()) {
+                this.gameState.achievements.unlocked.add(key);
+                newAchievements.push(achievement);
+                this.addToLog(`🏆 ACHIEVEMENT UNLOCKED: ${achievement.name} - ${achievement.description}`);
+            }
+        }
+        
+        if (newAchievements.length > 0) {
+            this.renderAchievements();
+        }
+        
+        return newAchievements;
+    }
+    
     init() {
         this.updateDisplay();
         this.setupEventListeners();
         this.updateMarketPrices();
+        this.renderAchievements();
         this.addToLog('Welcome to Oil Empire! Buy oil fields to start your business.');
     }
     
@@ -89,6 +196,7 @@ class OilEmpireGame {
         if (this.gameState.money >= fieldCost) {
             this.gameState.money -= fieldCost;
             this.gameState.ownedFields++;
+            this.gameState.achievements.totalFieldsPurchased++;
             this.addToLog(`Purchased oil field for $${fieldCost.toLocaleString()}. Now own ${this.gameState.ownedFields} fields.`);
             this.updateDisplay();
         } else {
@@ -127,6 +235,9 @@ class OilEmpireGame {
     nextMonth() {
         if (this.gameState.gameOver) return;
         
+        // Track months played
+        this.gameState.achievements.monthsPlayed++;
+        
         // Automatic drilling if you have fields
         this.drillOil();
         
@@ -146,6 +257,9 @@ class OilEmpireGame {
             this.gameState.currentYear++;
         }
         
+        // Check achievements
+        this.checkAchievements();
+        
         // Check win/lose conditions
         this.checkGameEnd();
         
@@ -156,6 +270,7 @@ class OilEmpireGame {
         if (this.gameState.ownedFields > 0) {
             const production = this.getTotalProduction();
             this.gameState.oilStock += production;
+            this.gameState.achievements.totalDrilled += production;
             this.addToLog(`Drilled ${production.toLocaleString()} barrels of oil this month.`);
         } else {
             this.addToLog('No oil fields owned - no oil produced this month.');
@@ -307,6 +422,7 @@ class OilEmpireGame {
             
             this.gameState.money += revenue;
             this.gameState.continentalOil[continentKey].available -= amount;
+            this.gameState.achievements.totalOilSold += amount;
             
             this.addToLog(`Sold ${amount.toLocaleString()} barrels in ${continent.name} for $${revenue.toLocaleString()}.`);
             this.updateDisplay();
@@ -344,10 +460,91 @@ class OilEmpireGame {
     }
     
     restartGame() {
-        location.reload();
+        // Reset all game state including achievements
+        this.gameState = {
+            money: 100000,
+            oilStock: 0,
+            ownedFields: 0,
+            equipmentLevel: 1,
+            currentMonth: 1,
+            currentYear: 2024,
+            baseOilPrice: 50,
+            marketTrend: 'Stable',
+            gameOver: false,
+            won: false,
+            
+            // Reset achievements tracking
+            achievements: {
+                unlocked: new Set(),
+                totalDrilled: 0,
+                maxMoney: 0,
+                totalFieldsPurchased: 0,
+                totalOilSold: 0,
+                monthsPlayed: 0
+            },
+            
+            // Continental oil tracking
+            continentalOil: {
+                'north-america': { available: 0, inTransit: [] },
+                'europe': { available: 0, inTransit: [] },
+                'asia': { available: 0, inTransit: [] },
+                'africa': { available: 0, inTransit: [] },
+                'south-america': { available: 0, inTransit: [] }
+            },
+            
+            // Market data
+            continents: {
+                'north-america': { name: 'North America', flag: '🇺🇸', multiplier: 1.1, demand: 'High', shippingTime: 2 },
+                'europe': { name: 'Europe', flag: '🇪🇺', multiplier: 1.04, demand: 'Medium', shippingTime: 3 },
+                'asia': { name: 'Asia', flag: '🇯🇵', multiplier: 0.96, demand: 'Very High', shippingTime: 4 },
+                'africa': { name: 'Africa', flag: '🌍', multiplier: 0.9, demand: 'Low', shippingTime: 2 },
+                'south-america': { name: 'South America', flag: '🇧🇷', multiplier: 1.0, demand: 'Medium', shippingTime: 3 }
+            },
+            
+            marketTrends: ['Crashing', 'Declining', 'Stable', 'Rising', 'Booming'],
+            trendMultipliers: { 'Crashing': 0.6, 'Declining': 0.8, 'Stable': 1.0, 'Rising': 1.2, 'Booming': 1.5 }
+        };
+        
+        // Clear the log and close modals
+        document.getElementById('log-content').innerHTML = '';
+        document.getElementById('game-over-modal').style.display = 'none';
+        
+        // Re-initialize the game
+        this.updateDisplay();
+        this.updateMarketPrices();
+        this.renderAchievements();
+        this.addToLog('New game started! Build your oil empire and unlock achievements!');
+    }
+    
+    renderAchievements() {
+        const achievements = this.getAchievementsList();
+        const achievementsList = document.getElementById('achievements-list');
+        const achievementCount = document.getElementById('achievement-count');
+        
+        achievementsList.innerHTML = '';
+        
+        for (const [key, achievement] of Object.entries(achievements)) {
+            const achievementDiv = document.createElement('div');
+            achievementDiv.className = `achievement ${this.gameState.achievements.unlocked.has(key) ? 'unlocked' : 'locked'}`;
+            
+            achievementDiv.innerHTML = `
+                <div class="achievement-name">${achievement.name}</div>
+                <div class="achievement-description">${achievement.description}</div>
+            `;
+            
+            achievementsList.appendChild(achievementDiv);
+        }
+        
+        achievementCount.textContent = this.gameState.achievements.unlocked.size;
     }
     
     updateDisplay() {
+        // Track max money achieved
+        this.gameState.achievements.maxMoney = Math.max(this.gameState.achievements.maxMoney, this.gameState.money);
+        
+        // Check for any new achievements
+        this.checkAchievements();
+        
         // Basic game info
         document.getElementById('money').textContent = this.gameState.money.toLocaleString();
         document.getElementById('oil-stock').textContent = this.gameState.oilStock.toLocaleString();

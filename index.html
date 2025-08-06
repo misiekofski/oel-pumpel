@@ -9,16 +9,36 @@
 <body>
     <div class="game-container">
         <header class="game-header">
-            <h1>🛢️ Oil Empire</h1>
-            <div class="game-info">
-                <div class="date-display">
-                    <span>Date: <span id="current-date">January 2024</span></span>
+            <div class="header-top">
+                <h1>🛢️ Oil Empire</h1>
+                <div class="game-info">
+                    <div class="date-display">
+                        <span>Date: <span id="current-date">January 2024</span></span>
+                    </div>
+                    <div class="money-display">
+                        <span>💰 Money: $<span id="money">100000</span></span>
+                    </div>
+                    <div class="goal-display">
+                        <span>🎯 Goal: Reach 2050 with $10M+</span>
+                    </div>
                 </div>
-                <div class="money-display">
-                    <span>💰 Money: $<span id="money">100000</span></span>
+            </div>
+            
+            <div class="header-bottom">
+                <button id="next-month" class="next-month-btn">⏭️ Next Month</button>
+                
+                <div class="achievements-section">
+                    <h3>🏆 Achievements (<span id="achievement-count">0</span>/12)</h3>
+                    <div id="achievements-list" class="achievements-grid">
+                        <!-- Achievements will be populated by JavaScript -->
+                    </div>
                 </div>
-                <div class="goal-display">
-                    <span>🎯 Goal: Reach 2050 with $10M+</span>
+                
+                <div class="game-log">
+                    <h3>📜 Game Log</h3>
+                    <div id="log-content">
+                        <p>Welcome to Oil Empire! Start drilling and build your oil business.</p>
+                    </div>
                 </div>
             </div>
         </header>
@@ -127,16 +147,6 @@
                 </section>
             </div>
         </main>
-
-        <footer class="game-footer">
-            <button id="next-month" class="next-month-btn">⏭️ Next Month</button>
-            <div class="game-log">
-                <h3>📜 Game Log</h3>
-                <div id="log-content">
-                    <p>Welcome to Oil Empire! Start drilling and build your oil business.</p>
-                </div>
-            </div>
-        </footer>
 
         <!-- Ship Oil Modal -->
         <div id="ship-modal" class="modal">
