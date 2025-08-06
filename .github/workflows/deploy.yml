@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Add permissions for GITHUB_TOKEN
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  # Deploy job
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          
+      - name: Clean install environment
+        run: |
+          rm -f package-lock.json
+          rm -rf node_modules
+          npm cache clean --force
+          
+      - name: Install dependencies with legacy resolution
+        run: |
+          npm config set legacy-peer-deps true
+          npm install --force --no-audit
+          
+      - name: Install specific compatible versions
+        run: |
+          npm install ajv@^6.12.6 ajv-keywords@^3.5.2 --force --no-save
+          
+      - name: Configure git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          
+      - name: Deploy to GitHub Pages
+        env:
+          CI: false
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          SKIP_PREFLIGHT_CHECK: true
+          TSC_COMPILE_ON_ERROR: true
+          GENERATE_SOURCEMAP: false
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          npm run deploy -- --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
