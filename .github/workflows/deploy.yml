@@ -59,6 +59,13 @@ jobs:
         run: |
           export NODE_OPTIONS="--max-old-space-size=4096"
           npm run build
+          
+      - name: List build contents
+        run: |
+          echo "Build directory contents:"
+          ls -la build/
+          echo "Build index.html exists:"
+          test -f build/index.html && echo "✅ index.html found" || echo "❌ index.html missing"
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
