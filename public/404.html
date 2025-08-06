@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Drill Baby Drill - Trump Oil Empire</title>
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      var pathSegmentsToKeep = 1;
+      // Simple redirect to root for React SPA
       var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      // If we're not at the root path, redirect to root with the path as a parameter
+      if (l.pathname !== '/oel-pumpel/') {
+        var path = l.pathname.replace('/oel-pumpel', '');
+        l.replace(l.protocol + '//' + l.hostname + '/oel-pumpel/' + '?redirect=' + encodeURIComponent(path));
+      }
     </script>
   </head>
   <body>
+    <div style="text-align: center; margin-top: 50px;">
+      <h1>🛢️ DRILL BABY DRILL 🛢️</h1>
+      <p>Redirecting to the Oil Empire...</p>
+    </div>
   </body>
 </html>
