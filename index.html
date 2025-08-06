@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Empire - Strategic Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🛢️ Oil Empire</h1>
+            <div class="game-info">
+                <div class="date-display">
+                    <span>Date: <span id="current-date">January 2024</span></span>
+                </div>
+                <div class="money-display">
+                    <span>💰 Money: $<span id="money">100000</span></span>
+                </div>
+                <div class="goal-display">
+                    <span>🎯 Goal: Reach 2050 with $10M+</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="left-panel">
+                <section class="oil-fields-section">
+                    <h2>🏭 Oil Fields</h2>
+                    <div class="fields-info">
+                        <p>Owned Oil Fields: <span id="owned-fields">0</span></p>
+                        <p>Total Monthly Production: <span id="total-production">0</span> barrels</p>
+                        <p>Oil Field Price: $<span id="field-price">25000</span> each</p>
+                    </div>
+                    
+                    <div class="actions">
+                        <button id="buy-field" class="action-btn">🏭 Buy Oil Field ($<span id="field-cost">25000</span>)</button>
+                    </div>
+                </section>
+
+                <section class="drilling-section">
+                    <h2>🔧 Drilling Equipment</h2>
+                    <div class="drilling-info">
+                        <p>Equipment Level: <span id="equipment-level">1</span></p>
+                        <p>Production per Field: <span id="oil-production">100</span> barrels/month</p>
+                        <p>Current Oil Stock: <span id="oil-stock">0</span> barrels</p>
+                    </div>
+                    
+                    <div class="actions">
+                        <button id="upgrade-equipment" class="action-btn">🔧 Upgrade Equipment ($<span id="upgrade-cost">50000</span>)</button>
+                    </div>
+                </section>
+
+                <section class="market-section">
+                    <h2>📊 Oil Market</h2>
+                    <div class="market-info">
+                        <p>Current Oil Price: $<span id="base-oil-price">50</span>/barrel</p>
+                        <p>Market Trend: <span id="market-trend">Stable</span></p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-panel">
+                <section class="continents-section">
+                    <h2>🌍 Continental Markets</h2>
+                    <div class="continents-grid">
+                        <div class="continent" data-continent="north-america">
+                            <h3>🇺🇸 North America</h3>
+                            <p>Price: $<span class="continent-price">55</span>/barrel</p>
+                            <p>Demand: <span class="continent-demand">High</span></p>
+                            <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
+                            <p>Available: <span class="oil-available">0</span> barrels</p>
+                            <div class="continent-actions">
+                                <button class="ship-btn" data-continent="north-america">🚢 Ship Oil Here</button>
+                                <button class="sell-btn" data-continent="north-america">💰 Sell Available Oil</button>
+                            </div>
+                        </div>
+                        
+                        <div class="continent" data-continent="europe">
+                            <h3>🇪🇺 Europe</h3>
+                            <p>Price: $<span class="continent-price">52</span>/barrel</p>
+                            <p>Demand: <span class="continent-demand">Medium</span></p>
+                            <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
+                            <p>Available: <span class="oil-available">0</span> barrels</p>
+                            <div class="continent-actions">
+                                <button class="ship-btn" data-continent="europe">🚢 Ship Oil Here</button>
+                                <button class="sell-btn" data-continent="europe">💰 Sell Available Oil</button>
+                            </div>
+                        </div>
+                        
+                        <div class="continent" data-continent="asia">
+                            <h3>🇯🇵 Asia</h3>
+                            <p>Price: $<span class="continent-price">48</span>/barrel</p>
+                            <p>Demand: <span class="continent-demand">Very High</span></p>
+                            <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
+                            <p>Available: <span class="oil-available">0</span> barrels</p>
+                            <div class="continent-actions">
+                                <button class="ship-btn" data-continent="asia">🚢 Ship Oil Here</button>
+                                <button class="sell-btn" data-continent="asia">💰 Sell Available Oil</button>
+                            </div>
+                        </div>
+                        
+                        <div class="continent" data-continent="africa">
+                            <h3>🌍 Africa</h3>
+                            <p>Price: $<span class="continent-price">45</span>/barrel</p>
+                            <p>Demand: <span class="continent-demand">Low</span></p>
+                            <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
+                            <p>Available: <span class="oil-available">0</span> barrels</p>
+                            <div class="continent-actions">
+                                <button class="ship-btn" data-continent="africa">🚢 Ship Oil Here</button>
+                                <button class="sell-btn" data-continent="africa">💰 Sell Available Oil</button>
+                            </div>
+                        </div>
+                        
+                        <div class="continent" data-continent="south-america">
+                            <h3>🇧🇷 South America</h3>
+                            <p>Price: $<span class="continent-price">50</span>/barrel</p>
+                            <p>Demand: <span class="continent-demand">Medium</span></p>
+                            <p>In Transit: <span class="oil-in-transit">0</span> barrels</p>
+                            <p>Available: <span class="oil-available">0</span> barrels</p>
+                            <div class="continent-actions">
+                                <button class="ship-btn" data-continent="south-america">🚢 Ship Oil Here</button>
+                                <button class="sell-btn" data-continent="south-america">💰 Sell Available Oil</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <button id="next-month" class="next-month-btn">⏭️ Next Month</button>
+            <div class="game-log">
+                <h3>📜 Game Log</h3>
+                <div id="log-content">
+                    <p>Welcome to Oil Empire! Start drilling and build your oil business.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Ship Oil Modal -->
+        <div id="ship-modal" class="modal">
+            <div class="modal-content">
+                <h3>Ship Oil to <span id="ship-modal-continent"></span></h3>
+                <p>Shipping Time: <span id="ship-time">2</span> months</p>
+                <p>Available Oil: <span id="ship-modal-available"></span> barrels</p>
+                <div class="ship-form">
+                    <label for="ship-amount">Amount to ship:</label>
+                    <input type="number" id="ship-amount" min="0" max="0">
+                    <button id="confirm-ship">Confirm Shipment</button>
+                    <button id="cancel-ship">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sell Oil Modal -->
+        <div id="sell-modal" class="modal">
+            <div class="modal-content">
+                <h3>Sell Oil in <span id="modal-continent"></span></h3>
+                <p>Price: $<span id="modal-price"></span>/barrel</p>
+                <p>Available Oil: <span id="modal-available"></span> barrels</p>
+                <div class="sell-form">
+                    <label for="sell-amount">Amount to sell:</label>
+                    <input type="number" id="sell-amount" min="0" max="0">
+                    <button id="confirm-sell">Confirm Sale</button>
+                    <button id="cancel-sell">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="game-over-title">Game Over</h2>
+                <p id="game-over-message"></p>
+                <button id="restart-game">Start New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
