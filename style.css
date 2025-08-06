@@ -61,6 +61,30 @@ body {
     align-items: start;
 }
 
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.save-btn, .clear-save-btn {
+    font-size: 0.9em;
+    padding: 8px 15px;
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+}
+
+.save-btn:hover {
+    background: linear-gradient(45deg, #e67e22, #d35400);
+}
+
+.clear-save-btn {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+.clear-save-btn:hover {
+    background: linear-gradient(45deg, #c0392b, #a93226);
+}
+
 /* Main Game Area */
 .game-main {
     display: grid;
@@ -215,7 +239,6 @@ section h2 {
     font-size: 1.2em;
     padding: 15px 25px;
     background: linear-gradient(45deg, #2ecc71, #27ae60);
-    align-self: start;
 }
 
 .next-month-btn:hover {
@@ -375,6 +398,11 @@ section h2 {
         text-align: center;
     }
     
+    .game-controls {
+        justify-self: center;
+        align-items: center;
+    }
+    
     .continents-grid {
         grid-template-columns: 1fr;
     }
@@ -382,10 +410,6 @@ section h2 {
     .achievements-grid {
         grid-template-columns: 1fr;
         max-height: 150px;
-    }
-    
-    .next-month-btn {
-        justify-self: center;
     }
 }
 

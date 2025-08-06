@@ -143,7 +143,72 @@ class OilEmpireGame {
         return newAchievements;
     }
     
+    saveGameState() {
+        try {
+            // Convert Set to Array for JSON serialization
+            const gameStateToSave = {
+                ...this.gameState,
+                achievements: {
+                    ...this.gameState.achievements,
+                    unlocked: Array.from(this.gameState.achievements.unlocked)
+                }
+            };
+            
+            localStorage.setItem('oilEmpireGameState', JSON.stringify(gameStateToSave));
+        } catch (error) {
+            console.warn('Could not save game state to localStorage:', error);
+        }
+    }
+    
+    loadGameState() {
+        try {
+            const savedState = localStorage.getItem('oilEmpireGameState');
+            if (savedState) {
+                const loadedState = JSON.parse(savedState);
+                
+                // Convert Array back to Set for unlocked achievements
+                if (loadedState.achievements && loadedState.achievements.unlocked) {
+                    loadedState.achievements.unlocked = new Set(loadedState.achievements.unlocked);
+                }
+                
+                // Merge loaded state with default state to handle any new properties
+                this.gameState = {
+                    ...this.gameState,
+                    ...loadedState
+                };
+                
+                this.addToLog('Game state loaded from previous session.');
+                return true;
+            }
+        } catch (error) {
+            console.warn('Could not load game state from localStorage:', error);
+            this.addToLog('Could not load previous session. Starting new game.');
+        }
+        return false;
+    }
+    
+    clearSavedGame() {
+        try {
+            localStorage.removeItem('oilEmpireGameState');
+        } catch (error) {
+            console.warn('Could not clear saved game:', error);
+        }
+    }
+    
+    manualSave() {
+        this.saveGameState();
+        this.addToLog('💾 Game manually saved to browser storage.');
+    }
+    
+    confirmClearSave() {
+        if (confirm('Are you sure you want to clear your saved game? This will delete your progress but keep the current session running.')) {
+            this.clearSavedGame();
+            this.addToLog('🗑️ Saved game data cleared from browser storage.');
+        }
+    }
+    
     init() {
+        this.loadGameState(); // Load saved state first
         this.updateDisplay();
         this.setupEventListeners();
         this.updateMarketPrices();
@@ -156,6 +221,8 @@ class OilEmpireGame {
         document.getElementById('buy-field').addEventListener('click', () => this.buyOilField());
         document.getElementById('upgrade-equipment').addEventListener('click', () => this.upgradeEquipment());
         document.getElementById('next-month').addEventListener('click', () => this.nextMonth());
+        document.getElementById('save-game').addEventListener('click', () => this.manualSave());
+        document.getElementById('clear-save').addEventListener('click', () => this.confirmClearSave());
         
         // Shipping and selling
         document.querySelectorAll('.ship-btn').forEach(btn => {
@@ -199,6 +266,7 @@ class OilEmpireGame {
             this.gameState.achievements.totalFieldsPurchased++;
             this.addToLog(`Purchased oil field for $${fieldCost.toLocaleString()}. Now own ${this.gameState.ownedFields} fields.`);
             this.updateDisplay();
+            this.saveGameState();
         } else {
             this.addToLog(`Not enough money to buy oil field. Need $${fieldCost.toLocaleString()}.`);
         }
@@ -215,6 +283,7 @@ class OilEmpireGame {
             this.gameState.equipmentLevel++;
             this.addToLog(`Upgraded equipment to level ${this.gameState.equipmentLevel} for $${upgradeCost.toLocaleString()}.`);
             this.updateDisplay();
+            this.saveGameState();
         } else {
             this.addToLog(`Not enough money to upgrade equipment. Need $${upgradeCost.toLocaleString()}.`);
         }
@@ -264,6 +333,7 @@ class OilEmpireGame {
         this.checkGameEnd();
         
         this.updateDisplay();
+        this.saveGameState(); // Save after each month
     }
     
     drillOil() {
@@ -384,6 +454,7 @@ class OilEmpireGame {
             this.addToLog(`Shipped ${amount.toLocaleString()} barrels to ${this.gameState.continents[continentKey].name}. Will arrive in ${shippingTime} months.`);
             this.updateDisplay();
             this.closeShipModal();
+            this.saveGameState();
         }
     }
     
@@ -427,6 +498,7 @@ class OilEmpireGame {
             this.addToLog(`Sold ${amount.toLocaleString()} barrels in ${continent.name} for $${revenue.toLocaleString()}.`);
             this.updateDisplay();
             this.closeSellModal();
+            this.saveGameState();
         }
     }
     
@@ -460,6 +532,9 @@ class OilEmpireGame {
     }
     
     restartGame() {
+        // Clear saved game state
+        this.clearSavedGame();
+        
         // Reset all game state including achievements
         this.gameState = {
             money: 100000,
