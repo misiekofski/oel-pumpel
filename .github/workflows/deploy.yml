@@ -48,7 +48,7 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
           
-      - name: Deploy to GitHub Pages
+      - name: Build React app
         env:
           CI: false
           NODE_OPTIONS: "--max-old-space-size=4096"
@@ -57,4 +57,19 @@ jobs:
           GENERATE_SOURCEMAP: false
         run: |
           export NODE_OPTIONS="--max-old-space-size=4096"
-          npm run deploy -- --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git --user="GitHub Actions <action@github.com>" --message="Deploy React app to GitHub Pages"
+          npm run build
+          
+      - name: Check build directory
+        run: |
+          echo "Checking if build directory exists..."
+          ls -la
+          echo "Build directory contents:"
+          ls -la build/ || echo "❌ Build directory does not exist"
+          echo "Looking for index.html:"
+          find . -name "index.html" -type f || echo "❌ No index.html found"
+          
+      - name: Deploy to GitHub Pages
+        run: |
+          echo "Running deployment manually..."
+          npm run build
+          npx gh-pages -d build --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git --user="GitHub Actions <action@github.com>" --message="Deploy React app to GitHub Pages"
