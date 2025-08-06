@@ -67,42 +67,42 @@ class OilEmpireGame {
         return {
             'oil_baron': {
                 name: '🛢️ Trump Oil Baron',
-                description: 'Drill over 100,000 barrels total - YUGE numbers!',
+                description: 'Drill 100K+ barrels. Folks, that\'s a lot of black gold. My uncle was an engineer, very smart guy.',
                 condition: () => this.gameState.achievements.totalDrilled >= 100000
             },
             'millionaire': {
                 name: '💰 Art of the Deal Millionaire',
-                description: 'Have $5,000,000 in your account - We make the best deals!',
+                description: 'Make $5M. I wrote a book about deals. It was tremendous. Number one bestseller, probably.',
                 condition: () => this.gameState.achievements.maxMoney >= 5000000
             },
             'tech_master': {
                 name: '🔧 Technology Genius',
-                description: 'Upgrade equipment 10+ times - Nobody knows tech like us!',
+                description: 'Upgrade 10+ times. I know technology. I have the best words about technology. Cyber!',
                 condition: () => this.gameState.equipmentLevel >= 11
             },
             'land_owner': {
                 name: '🏭 Real Estate Mogul',
-                description: 'Own 25 oil fields - The best properties, tremendous locations!',
+                description: 'Own 25 fields. I\'ve been in real estate my whole life. Location, location, location!',
                 condition: () => this.gameState.ownedFields >= 25
             },
             'early_bird': {
                 name: '⏰ Lightning Fast Winner',
-                description: 'Reach $1M before 2030 - Speed and efficiency, that\'s how we win!',
+                description: 'Reach $1M before 2030. I\'m like, really fast at making money. It\'s a gift.',
                 condition: () => this.gameState.money >= 1000000 && this.gameState.currentYear < 2030
             },
             'speed_runner': {
                 name: '🏃 Ultimate Champion',
-                description: 'Win before 2040 - We win fast, we win big!',
+                description: 'Win before 2040. I win at everything. Golf, business, beauty pageants. Winning!',
                 condition: () => this.gameState.won && this.gameState.currentYear < 2040
             },
             'oil_trader': {
                 name: '📈 Master Negotiator',
-                description: 'Sell over 500,000 barrels total - Nobody makes deals like us!',
+                description: 'Sell 500K+ barrels. I could sell ice to eskimos. Very talented negotiator.',
                 condition: () => this.gameState.achievements.totalOilSold >= 500000
             },
             'global_empire': {
                 name: '🌍 Global Energy Dominator',
-                description: 'Have oil in all 5 continents - We\'re everywhere, winning everywhere!',
+                description: 'Oil on all continents. I\'m international, very worldly. They love me in Japan.',
                 condition: () => {
                     const continents = Object.keys(this.gameState.continentalOil);
                     return continents.every(continent => 
@@ -112,7 +112,7 @@ class OilEmpireGame {
             },
             'pipeline_master': {
                 name: '🚢 Logistics Legend',
-                description: 'Have 50,000+ barrels in transit - The best supply chain in history!',
+                description: '50K+ barrels in transit. I understand supply chains. Very complex stuff.',
                 condition: () => {
                     let totalInTransit = 0;
                     Object.values(this.gameState.continentalOil).forEach(continent => {
@@ -123,17 +123,17 @@ class OilEmpireGame {
             },
             'survivor': {
                 name: '💪 Never Give Up Champion',
-                description: 'Play for 20+ years - Persistence and determination!',
+                description: 'Play 20+ years. I have tremendous stamina. Ask anyone. Incredible endurance.',
                 condition: () => this.gameState.achievements.monthsPlayed >= 240
             },
             'mogul': {
                 name: '👑 Energy Emperor',
-                description: 'Reach max equipment level (20) - The absolute best equipment!',
+                description: 'Max equipment level. Nobody has better equipment than me. It\'s beautiful equipment.',
                 condition: () => this.gameState.equipmentLevel >= 20
             },
             'steady_growth': {
                 name: '📊 Production Powerhouse',
-                description: 'Have 100,000+ barrels/month - Massive, beautiful production!',
+                description: '100K+ barrels/month. These are big numbers, folks. Probably the biggest numbers ever.',
                 condition: () => this.getTotalProduction() >= 100000
             }
         };
@@ -424,7 +424,7 @@ class OilEmpireGame {
             const production = this.getTotalProduction();
             this.gameState.oilStock += production;
             this.gameState.achievements.totalDrilled += production;
-            this.addToLog(`Drilled ${production.toLocaleString()} barrels of oil this month.`);
+            this.addToLog(`Drilled ${production.toLocaleString()} barrels this month! That's a lot of beautiful, black gold. Tremendous drilling!`);
         } else {
             this.addToLog('No oil fields owned - no oil produced this month.');
         }

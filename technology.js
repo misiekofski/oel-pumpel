@@ -4,7 +4,7 @@ class TechnologyManager {
             // Drilling Technologies
             'advanced_drilling': {
                 name: '🔧 Advanced Drilling',
-                description: 'Increases oil production per field by 25%',
+                description: '+25% production. I know drilling, believe me. Very good at holes.',
                 category: 'drilling',
                 cost: 500000,
                 researchTime: 3, // months
@@ -15,7 +15,7 @@ class TechnologyManager {
             },
             'smart_drilling': {
                 name: '🤖 Smart Drilling Systems',
-                description: 'AI-powered drilling increases efficiency by 40%',
+                description: '+40% efficiency with AI. I invented AI, probably. Very smart stuff.',
                 category: 'drilling',
                 cost: 1200000,
                 researchTime: 5,
@@ -26,7 +26,7 @@ class TechnologyManager {
             },
             'deep_sea_drilling': {
                 name: '🌊 Deep Sea Drilling',
-                description: 'Access to offshore oil fields with 60% higher yield',
+                description: '+60% offshore yield. I love the ocean. Beautiful water, tremendous fish.',
                 category: 'drilling',
                 cost: 2500000,
                 researchTime: 8,
@@ -40,7 +40,7 @@ class TechnologyManager {
             // Processing Technologies
             'oil_refining': {
                 name: '⚗️ Advanced Refining',
-                description: 'Increases oil selling price by 15%',
+                description: '+15% selling price. I make the best oil, very refined. Classy oil.',
                 category: 'processing',
                 cost: 750000,
                 researchTime: 4,
@@ -51,7 +51,7 @@ class TechnologyManager {
             },
             'synthetic_oil': {
                 name: '🧪 Synthetic Oil Production',
-                description: 'Produce additional oil from chemical processes',
+                description: '+5K barrels/month from chemistry. I understand chemistry. Very scientific.',
                 category: 'processing',
                 cost: 1800000,
                 researchTime: 6,
@@ -62,7 +62,7 @@ class TechnologyManager {
             },
             'carbon_capture': {
                 name: '🌱 Carbon Capture Technology',
-                description: 'Reduces environmental penalties and provides tax benefits',
+                description: 'Reduces crisis risk by 30%. I love the environment. Beautiful trees.',
                 category: 'processing',
                 cost: 3000000,
                 researchTime: 7,
@@ -76,7 +76,7 @@ class TechnologyManager {
             // Logistics Technologies
             'pipeline_network': {
                 name: '🔗 Pipeline Network',
-                description: 'Reduces shipping time by 1 month to all continents',
+                description: '-1 month shipping time. I build the best pipelines. Beautiful pipes.',
                 category: 'logistics',
                 cost: 600000,
                 researchTime: 4,
@@ -87,7 +87,7 @@ class TechnologyManager {
             },
             'tanker_fleet': {
                 name: '🚢 Advanced Tanker Fleet',
-                description: 'Ship 50% more oil per shipment',
+                description: '+50% shipping capacity. My ships are huge, tremendous ships.',
                 category: 'logistics',
                 cost: 1500000,
                 researchTime: 5,
@@ -98,7 +98,7 @@ class TechnologyManager {
             },
             'quantum_logistics': {
                 name: '⚡ Quantum Logistics',
-                description: 'Instant shipping to any continent (science fiction tech)',
+                description: 'Instant shipping everywhere. I understand quantum, very complex.',
                 category: 'logistics',
                 cost: 5000000,
                 researchTime: 10,
@@ -111,7 +111,7 @@ class TechnologyManager {
             // Market Technologies
             'market_analysis': {
                 name: '📊 AI Market Analysis',
-                description: 'Predict market trends one month in advance',
+                description: 'Predict trends 1 month ahead. I predict everything. Great predictor.',
                 category: 'market',
                 cost: 400000,
                 researchTime: 3,
@@ -122,7 +122,7 @@ class TechnologyManager {
             },
             'futures_trading': {
                 name: '💹 Futures Trading',
-                description: 'Lock in future oil prices for better profits',
+                description: 'Lock in better prices. I invented futures trading, probably.',
                 category: 'market',
                 cost: 1000000,
                 researchTime: 4,
@@ -134,7 +134,7 @@ class TechnologyManager {
             },
             'blockchain_trading': {
                 name: '🔗 Blockchain Trading',
-                description: 'Decentralized trading platform with 25% profit bonus',
+                description: '+25% profit with crypto. I understand blockchain. Very technical.',
                 category: 'market',
                 cost: 2200000,
                 researchTime: 6,
