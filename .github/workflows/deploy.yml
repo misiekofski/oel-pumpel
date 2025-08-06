@@ -57,4 +57,4 @@ jobs:
           GENERATE_SOURCEMAP: false
         run: |
           export NODE_OPTIONS="--max-old-space-size=4096"
-          npm run deploy -- --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          npm run deploy -- --repo=https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git --user="GitHub Actions <action@github.com>" --message="Deploy React app to GitHub Pages"
