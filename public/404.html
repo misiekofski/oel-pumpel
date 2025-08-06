@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Drill Baby Drill - Trump Oil Empire</title>
     <script type="text/javascript">
-      // Simple redirect to root for React SPA
-      var l = window.location;
-      // If we're not at the root path, redirect to root with the path as a parameter
-      if (l.pathname !== '/oel-pumpel/') {
-        var path = l.pathname.replace('/oel-pumpel', '');
-        l.replace(l.protocol + '//' + l.hostname + '/oel-pumpel/' + '?redirect=' + encodeURIComponent(path));
-      }
+      // Immediate redirect to the main app
+      window.location.href = '/oel-pumpel/';
     </script>
   </head>
   <body>
-    <div style="text-align: center; margin-top: 50px;">
+    <div style="text-align: center; margin-top: 50px; font-family: Arial; color: #333;">
       <h1>🛢️ DRILL BABY DRILL 🛢️</h1>
-      <p>Redirecting to the Oil Empire...</p>
+      <p>Loading Oil Empire...</p>
+      <p><a href="/oel-pumpel/">Click here if not redirected automatically</a></p>
     </div>
   </body>
 </html>
