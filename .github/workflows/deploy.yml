@@ -32,7 +32,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '16'
           
       - name: Clean install environment
         run: |
@@ -42,9 +42,17 @@ jobs:
           
       - name: Install dependencies
         run: |
-          npm install --legacy-peer-deps
+          npm install --force --no-audit
           
-      - name: Build
+      - name: Debug installed packages
+        run: |
+          npm list ajv || echo "ajv not found"
+          npm list ajv-keywords || echo "ajv-keywords not found"
+          
+      - name: Build with CI environment
+        env:
+          CI: false
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: npm run build
         
       - name: Setup Pages
