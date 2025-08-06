@@ -4,19 +4,8 @@ const GAME_SAVE_KEY = 'drill_baby_drill_save';
 
 export const saveGameState = (state) => {
   try {
-    // Convert Set objects to arrays for JSON serialization
-    const serializedState = {
-      ...state,
-      game: {
-        ...state.game,
-        achievements: {
-          ...state.game.achievements,
-          unlocked: Array.from(state.game.achievements.unlocked || [])
-        }
-      }
-    };
-    
-    const serializedData = JSON.stringify(serializedState);
+    // State already uses arrays, no conversion needed
+    const serializedData = JSON.stringify(state);
     localStorage.setItem(GAME_SAVE_KEY, serializedData);
     console.log('✅ Game saved successfully');
   } catch (error) {
@@ -33,12 +22,6 @@ export const loadGameState = () => {
     }
     
     const state = JSON.parse(serializedData);
-    
-    // Convert achievements unlocked array back to Set
-    if (state.game && state.game.achievements && state.game.achievements.unlocked) {
-      state.game.achievements.unlocked = new Set(state.game.achievements.unlocked);
-    }
-    
     console.log('📁 Game loaded from save');
     return state;
   } catch (error) {

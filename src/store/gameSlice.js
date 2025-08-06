@@ -14,12 +14,21 @@ const initialState = {
   
   // Achievements tracking
   achievements: {
-    unlocked: new Set(),
+    unlocked: [],
     totalDrilled: 0,
     maxMoney: 0,
     totalFieldsPurchased: 0,
     totalOilSold: 0,
-    monthsPlayed: 0
+    monthsPlayed: 0,
+    
+    // Individual achievement flags for easier checking
+    millionaire: false,
+    oilBaron: false,
+    oilTycoon: false,
+    drillMaster: false,
+    drillLegend: false,
+    oilDealer: false,
+    oilMogul: false
   },
   
   // Continental oil tracking
@@ -41,7 +50,7 @@ const initialState = {
   },
   
   marketTrends: ['Crashing', 'Declining', 'Stable', 'Rising', 'Booming'],
-  trendMultipliers: { 'Crashing': 0.6, 'Declining': 0.8, 'Stable': 1.0, 'Rising': 1.2, 'Booming': 1.5 }
+  trendMultipliers: { 'Recession': 0.6, 'Decline': 0.8, 'Stable': 1.0, 'Growth': 1.2, 'Boom': 1.5 }
 };
 
 const gameSlice = createSlice({
@@ -108,17 +117,29 @@ const gameSlice = createSlice({
     },
     
     sellOil: (state, action) => {
-      const { continent, amount, price } = action.payload;
-      const available = state.continentalOil[continent].available;
-      if (amount <= available) {
-        state.money += amount * price;
-        state.continentalOil[continent].available -= amount;
-        state.achievements.totalOilSold += amount;
+      const { amount, price } = action.payload;
+      
+      // Safety checks to prevent NaN
+      const safeAmount = parseInt(amount) || 0;
+      const safePrice = parseInt(price) || 0;
+      
+      if (safeAmount > 0 && safeAmount <= state.oilStock && safePrice > 0) {
+        const earnings = safeAmount * safePrice;
+        state.money += earnings;
+        state.oilStock -= safeAmount;
+        state.achievements.totalOilSold += safeAmount;
       }
     },
     
     unlockAchievement: (state, action) => {
-      state.achievements.unlocked.add(action.payload);
+      const achievementName = action.payload;
+      if (!state.achievements.unlocked.includes(achievementName)) {
+        state.achievements.unlocked.push(achievementName);
+        // Set the specific achievement flag
+        if (state.achievements.hasOwnProperty(achievementName)) {
+          state.achievements[achievementName] = true;
+        }
+      }
     },
     
     setGameOver: (state, action) => {
@@ -127,7 +148,13 @@ const gameSlice = createSlice({
     },
     
     resetGame: (state) => {
-      return { ...initialState, achievements: { ...initialState.achievements, unlocked: new Set() } };
+      return { 
+        ...initialState, 
+        achievements: { 
+          ...initialState.achievements, 
+          unlocked: [] 
+        } 
+      };
     },
     
     loadGameState: (state, action) => {

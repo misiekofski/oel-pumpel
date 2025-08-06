@@ -5,7 +5,7 @@ import GameHeader from './components/GameHeader';
 import OilFields from './components/OilFields';
 import Technology from './components/Technology';
 import Crisis from './components/Crisis';
-import Continents from './components/Continents';
+import SellShip from './components/SellShip';
 import { 
   nextMonth, 
   processShipments, 
@@ -60,11 +60,12 @@ const NextMonthButton = styled.button`
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
-  margin: 15px auto 10px auto;
+  margin: 8px auto;
   display: block;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.2s ease;
+  max-width: 1200px;
   
   &:hover {
     background: #e9ecef;
@@ -85,16 +86,10 @@ function App() {
 
   // Process month function
   const processMonth = () => {
-    // Process monthly production (this updates oilFields.monthlyProduction)
+    // Process monthly production first
     dispatch(processMonthlyProduction({
       equipmentLevel: gameState?.equipmentLevel || 1
     }));
-
-    // Add produced oil to stock (get production from state after dispatch)
-    const currentProduction = oilFields?.monthlyProduction || 0;
-    if (currentProduction > 0) {
-      dispatch(updateOilStock(currentProduction));
-    }
 
     // Process research
     dispatch(processResearch({
@@ -193,8 +188,16 @@ function App() {
     }
   }, [gameState?.money, gameState?.achievements?.totalDrilled, gameState?.achievements?.totalOilSold]);
 
+  // Oil production effect - automatically add monthly production to oil stock
+  useEffect(() => {
+    const currentProduction = oilFields?.monthlyProduction || 0;
+    if (currentProduction > 0) {
+      dispatch(updateOilStock(currentProduction));
+    }
+  }, [oilFields?.monthlyProduction, dispatch]);
+
   // Show loading if state not ready
-  if (!gameState || !oilFields?.fields || !technology?.technologies || !crisis?.activeEvents) {
+  if (!gameState || !oilFields?.fields || !technology?.technologies) {
     return (
       <AppContainer>
         <div style={{ 
@@ -205,7 +208,7 @@ function App() {
           fontSize: '24px',
           color: '#666666'
         }}>
-          Loading Drill Baby Drill Empire...
+          Loading Drill Baby Drill Empire... (Gonna be HUGE!)
         </div>
       </AppContainer>
     );
@@ -220,7 +223,7 @@ function App() {
       <GameHeader />
       
       <NextMonthButton onClick={handleNextMonth}>
-        ⏭ Next Month
+        ⏭ ADVANCE EMPIRE
       </NextMonthButton>
       
       <GameContent>
@@ -233,9 +236,9 @@ function App() {
         </GameSection>
         
         <GameSection>
-          <Crisis />
+          <SellShip />
           <div style={{ marginTop: '20px' }}>
-            <Continents />
+            <Crisis />
           </div>
         </GameSection>
       </GameContent>

@@ -15,12 +15,15 @@ const pulse = keyframes`
 
 const HeaderContainer = styled.div`
   background: #ffffff;
-  padding: 20px;
+  padding: 20px 12px;
   text-align: center;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  max-width: 1200px;
+  margin: 12px auto;
 `;
 
 const HeaderTop = styled.div`
@@ -78,26 +81,36 @@ const GameSubtitle = styled.p`
 
 const StatsContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 15px;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
   
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
+`;
+
+const StatsRow = styled.div`
+  display: contents;
 `;
 
 const StatCard = styled.div`
   background: #f8f9fa;
-  padding: 15px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 4px;
   border: 1px solid #e9ecef;
+  text-align: center;
   
   h3 {
     color: #495057;
-    margin: 0 0 5px 0;
-    font-size: 0.9rem;
+    margin: 0 0 4px 0;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 500;
@@ -106,18 +119,34 @@ const StatCard = styled.div`
   p {
     color: #212529;
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
+  }
+  
+  &.primary {
+    background: #e3f2fd;
+    border-color: #bbdefb;
+    
+    h3 { color: #1565c0; }
+    p { color: #0d47a1; }
+  }
+  
+  &.secondary {
+    background: #f3e5f5;
+    border-color: #ce93d8;
+    
+    h3 { color: #7b1fa2; }
+    p { color: #4a148c; }
   }
 `;
 
 const TrendIndicator = styled.span`
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  display: block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
   font-weight: 500;
-  margin-left: 8px;
+  margin-top: 2px;
   
   ${props => {
     switch (props.trend) {
@@ -148,6 +177,11 @@ const GameHeader = () => {
   console.log('GameHeader render - oilFields.fields:', oilFields?.fields);
 
   const formatMoney = (amount) => {
+    // Safety check for NaN, undefined, or null values
+    if (typeof amount !== 'number' || isNaN(amount)) {
+      return '$0';
+    }
+    
     if (amount >= 1000000) {
       return `$${(amount / 1000000).toFixed(1)}M`;
     } else if (amount >= 1000) {
@@ -167,7 +201,7 @@ const GameHeader = () => {
   const activeEvents = crisis?.activeEvents?.length || 0;
 
   const handleNewGame = () => {
-    if (window.confirm('Are you sure you want to start a new game? All progress will be lost!')) {
+    if (window.confirm('Are you absolutely sure you want to abandon this tremendous empire and start fresh? All your bigly progress will vanish - FOREVER!')) {
       clearGameSave();
       window.location.reload();
     }
@@ -178,59 +212,61 @@ const GameHeader = () => {
       <HeaderTop>
         <div></div>
         <div>
-          <GameTitle>🛢️ DRILL BABY DRILL 🛢️</GameTitle>
-          <GameSubtitle>"The most tremendous oil empire, believe me!"</GameSubtitle>
+          <GameTitle>🛢️ DRILL BABY DRILL EMPIRE 🛢️</GameTitle>
+          <GameSubtitle>"Making Oil Great Again - The most tremendous drilling operation, believe me, many people are saying it!"</GameSubtitle>
         </div>
         <NewGameButton onClick={handleNewGame}>
-          New Game
+          🔄 RESTART EMPIRE
         </NewGameButton>
       </HeaderTop>
       
       <StatsContainer>
-        <StatCard>
-          <h3>💰 Cash Money</h3>
+        {/* Row 1: Primary Stats */}
+        <StatCard className="primary">
+          <h3>💰 Tremendous Cash</h3>
           <p>{formatMoney(gameState.money)}</p>
         </StatCard>
         
-        <StatCard>
-          <h3>🛢️ Oil Stock</h3>
-          <p>{gameState.oilStock.toLocaleString()} barrels</p>
+        <StatCard className="primary">
+          <h3>🛢️ Bigly Oil Reserves</h3>
+          <p>{gameState.oilStock.toLocaleString()}</p>
         </StatCard>
         
         <StatCard>
-          <h3>📅 Date</h3>
+          <h3>📅 Current Timeline</h3>
           <p>{getMonthName(gameState.currentMonth)} {gameState.currentYear}</p>
         </StatCard>
         
         <StatCard>
-          <h3>💼 Market</h3>
+          <h3>💼 Market Vibes</h3>
           <p>
-            ${gameState.baseOilPrice}/barrel
+            ${gameState.baseOilPrice}
             <TrendIndicator trend={gameState.marketTrend}>
               {gameState.marketTrend}
             </TrendIndicator>
           </p>
         </StatCard>
         
-        <StatCard>
-          <h3>🏭 Active Fields</h3>
-          <p>{activeFields} / {oilFields.fields.length}</p>
+        {/* Row 2: Secondary Stats */}
+        <StatCard className="secondary">
+          <h3>🏭 Active Drilling Sites</h3>
+          <p>{activeFields}/{oilFields.fields.length}</p>
+        </StatCard>
+        
+        <StatCard className="secondary">
+          <h3>🔬 Genius Inventions</h3>
+          <p>{researchedTechs}/{technology.technologies.length}</p>
         </StatCard>
         
         <StatCard>
-          <h3>🔬 Technologies</h3>
-          <p>{researchedTechs} / {technology.technologies.length}</p>
+          <h3>⚡ Equipment Lvl</h3>
+          <p>Lvl.{gameState.equipmentLevel} (ELITE)</p>
         </StatCard>
         
         <StatCard>
-          <h3>⚡ Equipment Level</h3>
-          <p>Level {gameState.equipmentLevel}</p>
-        </StatCard>
-        
-        <StatCard>
-          <h3>🚨 Active Crises</h3>
-          <p style={{ color: activeEvents > 0 ? '#FF4444' : '#44FF44' }}>
-            {activeEvents} events
+          <h3>🚨 Drama Level</h3>
+          <p style={{ color: activeEvents > 0 ? '#dc3545' : '#28a745' }}>
+            {activeEvents > 0 ? `${activeEvents} CRISIS` : 'ALL GOOD'}
           </p>
         </StatCard>
       </StatsContainer>

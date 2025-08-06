@@ -120,7 +120,7 @@ const oilFieldsSlice = createSlice({
         if (field.purchased && field.monthsRemaining > 0) {
           // Calculate production with equipment bonus and field type multiplier
           const fieldType = state.fieldTypes[field.type];
-          const production = field.yield * fieldType.multiplier * equipmentLevel;
+          const production = Math.floor(field.yield * fieldType.multiplier * equipmentLevel);
           totalProduction += production;
           
           // Decrease remaining months and apply depletion
@@ -134,7 +134,7 @@ const oilFieldsSlice = createSlice({
         }
       });
       
-      state.monthlyProduction = totalProduction;
+      state.monthlyProduction = Math.floor(totalProduction);
       // Don't return value from Redux action - just store it in state
     },
     
