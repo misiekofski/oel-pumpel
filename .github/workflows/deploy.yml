@@ -52,11 +52,13 @@ jobs:
       - name: Build with relaxed environment
         env:
           CI: false
-          NODE_OPTIONS: "--max-old-space-size=4096 --openssl-legacy-provider"
+          NODE_OPTIONS: "--max-old-space-size=4096"
           SKIP_PREFLIGHT_CHECK: true
           TSC_COMPILE_ON_ERROR: true
           GENERATE_SOURCEMAP: false
-        run: npm run build
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          npm run build
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
