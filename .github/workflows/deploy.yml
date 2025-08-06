@@ -23,36 +23,11 @@ jobs:
       - name: Install dependencies
         run: |
           rm -f package-lock.json
-          npm install
-        
-      - name: Build
-        run: |
-          npm run build || echo "React build failed"
-        
-      - name: Check build output and prepare deployment
-        run: |
-          echo "Checking build directory..."
-          ls -la
-          if [ -d "build" ] && [ "$(ls -A build 2>/dev/null)" ]; then
-            echo "✅ React build succeeded"
-            ls -la build/
-          else
-            echo "❌ React build failed or empty, using legacy version"
-            mkdir -p build
-            cp legacy/index.html build/
-            cp legacy/style.css build/
-            cp legacy/script.js build/
-            cp legacy/crisis-events.js build/
-            cp legacy/technology.js build/
-            cp legacy/oil-fields.js build/
-            mkdir -p build/img
-            cp -r legacy/img/* build/img/ 2>/dev/null || true
-            echo "✅ Legacy version copied to build directory"
-            ls -la build/
-          fi
+          npm install --legacy-peer-deps
           
-      - name: Deploy
+      - name: Build & Deploy
+        env:
+          CI: false
+          GENERATE_SOURCEMAP: false
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          npx gh-pages -d build -r https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          npm run deploy
