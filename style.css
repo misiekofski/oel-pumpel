@@ -435,3 +435,262 @@ section h2 {
     50% { transform: scale(0.9); }
     100% { transform: scale(1); }
 }
+
+/* New Feature Styles */
+
+/* Field Types Section */
+.field-types-section {
+    margin-bottom: 20px;
+}
+
+.field-types-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.field-type-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a90e2;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.field-type-card:hover {
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.field-type-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #666;
+}
+
+.field-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.field-type-name {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.field-type-cost {
+    color: #f39c12;
+    font-size: 0.8em;
+}
+
+.field-type-description {
+    font-size: 0.75em;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+.field-type-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7em;
+    color: #aaa;
+}
+
+/* Technology Section */
+.technology-section {
+    margin-bottom: 20px;
+}
+
+.research-status {
+    margin-bottom: 15px;
+}
+
+.research-progress {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a90e2;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #f39c12);
+    transition: width 0.3s ease;
+}
+
+.technology-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tech-category {
+    margin-bottom: 15px;
+}
+
+.tech-category-header {
+    background: rgba(74, 144, 226, 0.2);
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.tech-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.8em;
+}
+
+.tech-card:hover {
+    border-color: #4a90e2;
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.tech-card.researched {
+    border-color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.tech-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tech-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.tech-name {
+    font-weight: bold;
+}
+
+.tech-cost {
+    color: #f39c12;
+    font-size: 0.7em;
+}
+
+.tech-description {
+    color: #bbb;
+    font-size: 0.7em;
+    margin-bottom: 3px;
+}
+
+.tech-time {
+    color: #aaa;
+    font-size: 0.65em;
+}
+
+/* Crisis Section */
+.crisis-section {
+    margin-bottom: 20px;
+}
+
+.active-crises {
+    margin-bottom: 10px;
+}
+
+.crisis-card {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid #e74c3c;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    font-size: 0.8em;
+}
+
+.crisis-card.positive {
+    background: rgba(39, 174, 96, 0.2);
+    border-color: #27ae60;
+}
+
+.crisis-header {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.crisis-effect {
+    color: #bbb;
+    font-size: 0.75em;
+    margin-bottom: 3px;
+}
+
+.crisis-time {
+    color: #aaa;
+    font-size: 0.7em;
+}
+
+.crisis-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+/* Field Summary */
+.field-summary {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #4a90e2;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.field-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.8em;
+}
+
+.field-summary-item:last-child {
+    border-bottom: none;
+}
+
+.field-efficiency {
+    color: #f39c12;
+}
+
+/* Responsive adjustments for new features */
+@media (max-width: 768px) {
+    .field-types-grid,
+    .technology-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .crisis-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .tech-header,
+    .field-type-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}

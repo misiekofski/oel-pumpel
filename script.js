@@ -1,5 +1,10 @@
 class OilEmpireGame {
     constructor() {
+        // Initialize managers for new features
+        this.crisisManager = new CrisisEventManager();
+        this.technologyManager = new TechnologyManager();
+        this.oilFieldManager = new OilFieldManager();
+        
         this.gameState = {
             money: 100000,
             oilStock: 0,
@@ -11,6 +16,16 @@ class OilEmpireGame {
             marketTrend: 'Stable',
             gameOver: false,
             won: false,
+            
+            // New feature states
+            ownedFieldsByType: {},
+            fieldProduction: {},
+            research: {
+                completed: new Set(),
+                inProgress: {},
+                effects: {}
+            },
+            crisisEffects: {},
             
             // Achievements tracking
             achievements: {
@@ -151,6 +166,10 @@ class OilEmpireGame {
                 achievements: {
                     ...this.gameState.achievements,
                     unlocked: Array.from(this.gameState.achievements.unlocked)
+                },
+                research: {
+                    ...this.gameState.research,
+                    completed: Array.from(this.gameState.research.completed || new Set())
                 }
             };
             
@@ -169,6 +188,11 @@ class OilEmpireGame {
                 // Convert Array back to Set for unlocked achievements
                 if (loadedState.achievements && loadedState.achievements.unlocked) {
                     loadedState.achievements.unlocked = new Set(loadedState.achievements.unlocked);
+                }
+                
+                // Convert Array back to Set for completed research
+                if (loadedState.research && loadedState.research.completed) {
+                    loadedState.research.completed = new Set(loadedState.research.completed);
                 }
                 
                 // Merge loaded state with default state to handle any new properties
@@ -213,7 +237,10 @@ class OilEmpireGame {
         this.setupEventListeners();
         this.updateMarketPrices();
         this.renderAchievements();
-        this.addToLog('Welcome to Oil Empire! Buy oil fields to start your business.');
+        this.renderFieldTypes();
+        this.renderTechnologies();
+        this.renderActiveCrises();
+        this.addToLog('Welcome to Oil Empire! Buy oil fields and research new technologies to start your business.');
     }
     
     setupEventListeners() {
@@ -223,6 +250,7 @@ class OilEmpireGame {
         document.getElementById('next-month').addEventListener('click', () => this.nextMonth());
         document.getElementById('save-game').addEventListener('click', () => this.manualSave());
         document.getElementById('clear-save').addEventListener('click', () => this.confirmClearSave());
+        document.getElementById('perform-maintenance').addEventListener('click', () => this.performMaintenance());
         
         // Shipping and selling
         document.querySelectorAll('.ship-btn').forEach(btn => {
@@ -246,6 +274,12 @@ class OilEmpireGame {
         document.getElementById('cancel-sell').addEventListener('click', () => this.closeSellModal());
         document.getElementById('restart-game').addEventListener('click', () => this.restartGame());
         
+        // New feature modal handlers
+        document.getElementById('confirm-research').addEventListener('click', () => this.confirmResearch());
+        document.getElementById('cancel-research').addEventListener('click', () => this.closeResearchModal());
+        document.getElementById('confirm-field-purchase').addEventListener('click', () => this.confirmFieldPurchase());
+        document.getElementById('cancel-field-purchase').addEventListener('click', () => this.closeFieldTypeModal());
+        
         // Close modals on background click
         document.getElementById('ship-modal').addEventListener('click', (e) => {
             if (e.target.id === 'ship-modal') this.closeShipModal();
@@ -256,24 +290,29 @@ class OilEmpireGame {
         document.getElementById('game-over-modal').addEventListener('click', (e) => {
             if (e.target.id === 'game-over-modal') this.restartGame();
         });
+        document.getElementById('research-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'research-modal') this.closeResearchModal();
+        });
+        document.getElementById('field-type-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'field-type-modal') this.closeFieldTypeModal();
+        });
     }
     
     buyOilField() {
-        const fieldCost = this.getFieldCost();
-        if (this.gameState.money >= fieldCost) {
-            this.gameState.money -= fieldCost;
-            this.gameState.ownedFields++;
+        // Use conventional field type for the old button
+        const result = this.oilFieldManager.buyOilField('conventional', this.gameState);
+        if (result.success) {
             this.gameState.achievements.totalFieldsPurchased++;
-            this.addToLog(`Purchased oil field for $${fieldCost.toLocaleString()}. Now own ${this.gameState.ownedFields} fields.`);
+            this.addToLog(result.message);
             this.updateDisplay();
             this.saveGameState();
         } else {
-            this.addToLog(`Not enough money to buy oil field. Need $${fieldCost.toLocaleString()}.`);
+            this.addToLog(result.message);
         }
     }
     
     getFieldCost() {
-        return 25000 + (this.gameState.ownedFields * 10000); // Price increases with each field
+        return this.oilFieldManager.getFieldCost('conventional', this.gameState);
     }
     
     upgradeEquipment() {
@@ -298,7 +337,12 @@ class OilEmpireGame {
     }
     
     getTotalProduction() {
-        return this.gameState.ownedFields * this.getProductionPerField();
+        let production = this.oilFieldManager.calculateTotalProduction(this.gameState, this.gameState.equipmentLevel);
+        // Apply technology modifiers
+        production = this.technologyManager.applyProductionModifiers(production, this.gameState);
+        // Apply crisis modifiers
+        production = this.crisisManager.applyProductionModifier(production, this.gameState);
+        return Math.max(0, production);
     }
     
     nextMonth() {
@@ -307,17 +351,40 @@ class OilEmpireGame {
         // Track months played
         this.gameState.achievements.monthsPlayed++;
         
+        // Process field aging and maintenance
+        this.oilFieldManager.processFieldAging(this.gameState);
+        
+        // Process research
+        const completedResearch = this.technologyManager.processResearch(this.gameState);
+        if (completedResearch.length > 0) {
+            completedResearch.forEach(tech => {
+                this.addToLog(`🔬 Research completed: ${tech.name}! ${tech.description}`);
+            });
+        }
+        
+        // Process ongoing crises
+        this.crisisManager.processCrisisEffects(this.gameState);
+        
         // Automatic drilling if you have fields
         this.drillOil();
         
         // Process shipments
         this.processShipments();
         
+        // Check for crisis events
+        const crisisEvent = this.crisisManager.checkForCrisis(this.gameState);
+        if (crisisEvent) {
+            const severity = crisisEvent.severity === 'positive' ? '🎉' : '⚠️';
+            this.addToLog(`${severity} CRISIS EVENT: ${crisisEvent.name} - ${crisisEvent.message}`);
+        }
+        
         // Update market prices
         this.updateMarketPrices();
         
-        // Random events
-        this.handleRandomEvents();
+        // Random events (reduced probability since we have crisis events now)
+        if (Math.random() < 0.05) { // Reduced from 15% to 5%
+            this.handleRandomEvents();
+        }
         
         // Advance time
         this.gameState.currentMonth++;
@@ -333,6 +400,7 @@ class OilEmpireGame {
         this.checkGameEnd();
         
         this.updateDisplay();
+        this.renderActiveCrises();
         this.saveGameState(); // Save after each month
     }
     
@@ -377,13 +445,22 @@ class OilEmpireGame {
         // Update base price with trend and random variation
         const trendMultiplier = this.gameState.trendMultipliers[this.gameState.marketTrend];
         const randomVariation = 0.9 + Math.random() * 0.2; // ±10% random variation
-        this.gameState.baseOilPrice = Math.max(20, Math.floor(50 * trendMultiplier * randomVariation));
+        let basePrice = Math.max(20, Math.floor(50 * trendMultiplier * randomVariation));
+        
+        // Apply crisis effects
+        basePrice = this.crisisManager.applyPriceModifier(basePrice, this.gameState);
+        
+        this.gameState.baseOilPrice = basePrice;
         
         // Update continental prices
         document.querySelectorAll('.continent').forEach(continent => {
             const continentKey = continent.dataset.continent;
             const multiplier = this.gameState.continents[continentKey].multiplier;
-            const price = Math.floor(this.gameState.baseOilPrice * multiplier);
+            let price = Math.floor(this.gameState.baseOilPrice * multiplier);
+            
+            // Apply technology modifiers
+            price = this.technologyManager.applyPriceModifiers(price, this.gameState);
+            
             continent.querySelector('.continent-price').textContent = price;
         });
     }
@@ -425,8 +502,14 @@ class OilEmpireGame {
         }
         
         const continent = this.gameState.continents[continentKey];
+        let shippingTime = continent.shippingTime;
+        
+        // Apply technology and crisis modifiers
+        shippingTime = this.technologyManager.applyShippingModifiers(shippingTime, this.gameState);
+        shippingTime = this.crisisManager.applyShippingModifier(shippingTime, this.gameState);
+        
         document.getElementById('ship-modal-continent').textContent = continent.name;
-        document.getElementById('ship-time').textContent = continent.shippingTime;
+        document.getElementById('ship-time').textContent = shippingTime;
         document.getElementById('ship-modal-available').textContent = this.gameState.oilStock.toLocaleString();
         document.getElementById('ship-amount').max = this.gameState.oilStock;
         document.getElementById('ship-amount').value = Math.min(1000, this.gameState.oilStock);
@@ -444,7 +527,11 @@ class OilEmpireGame {
         
         if (amount > 0 && amount <= this.gameState.oilStock) {
             this.gameState.oilStock -= amount;
-            const shippingTime = this.gameState.continents[continentKey].shippingTime;
+            let shippingTime = this.gameState.continents[continentKey].shippingTime;
+            
+            // Apply technology and crisis modifiers
+            shippingTime = this.technologyManager.applyShippingModifiers(shippingTime, this.gameState);
+            shippingTime = this.crisisManager.applyShippingModifier(shippingTime, this.gameState);
             
             this.gameState.continentalOil[continentKey].inTransit.push({
                 amount: amount,
@@ -502,6 +589,270 @@ class OilEmpireGame {
         }
     }
     
+    // New feature methods
+    performMaintenance() {
+        const result = this.oilFieldManager.performMaintenance(this.gameState);
+        this.addToLog(result.message);
+        if (result.success) {
+            this.updateDisplay();
+            this.saveGameState();
+        }
+    }
+    
+    // Field Type Modal Methods
+    openFieldTypeModal(fieldType) {
+        const field = this.oilFieldManager.fieldTypes[fieldType];
+        const cost = this.oilFieldManager.getFieldCost(fieldType, this.gameState);
+        
+        document.getElementById('field-type-name').textContent = field.name;
+        document.getElementById('field-type-description').textContent = field.description;
+        document.getElementById('field-type-cost').textContent = cost.toLocaleString();
+        document.getElementById('field-type-production').textContent = field.baseProduction.toLocaleString();
+        document.getElementById('field-type-maintenance').textContent = field.maintenanceCost.toLocaleString();
+        
+        // Show requirements if any
+        const requirements = document.getElementById('field-type-requirements');
+        if (field.requiresTech) {
+            const tech = this.technologyManager.technologies[field.requiresTech];
+            requirements.innerHTML = `<p style="color: #e74c3c;">Requires: ${tech.name}</p>`;
+            requirements.style.display = 'block';
+        } else {
+            requirements.style.display = 'none';
+        }
+        
+        document.getElementById('field-type-modal').style.display = 'flex';
+        document.getElementById('field-type-modal').dataset.fieldType = fieldType;
+    }
+    
+    closeFieldTypeModal() {
+        document.getElementById('field-type-modal').style.display = 'none';
+    }
+    
+    confirmFieldPurchase() {
+        const fieldType = document.getElementById('field-type-modal').dataset.fieldType;
+        const result = this.oilFieldManager.buyOilField(fieldType, this.gameState);
+        
+        if (result.success) {
+            this.gameState.achievements.totalFieldsPurchased++;
+            this.addToLog(result.message);
+            this.updateDisplay();
+            this.renderFieldTypes();
+            this.saveGameState();
+        } else {
+            this.addToLog(result.message);
+        }
+        
+        this.closeFieldTypeModal();
+    }
+    
+    // Research Modal Methods
+    openResearchModal(techKey) {
+        const tech = this.technologyManager.technologies[techKey];
+        
+        document.getElementById('research-tech-name').textContent = tech.name;
+        document.getElementById('research-tech-description').textContent = tech.description;
+        document.getElementById('research-tech-cost').textContent = tech.cost.toLocaleString();
+        document.getElementById('research-tech-time').textContent = tech.researchTime;
+        
+        // Show prerequisites
+        const prerequisites = document.getElementById('research-prerequisites');
+        if (tech.prerequisites.length > 0) {
+            const prereqNames = tech.prerequisites.map(prereq => 
+                this.technologyManager.technologies[prereq].name
+            ).join(', ');
+            prerequisites.innerHTML = `<p style="color: #4a90e2;">Prerequisites: ${prereqNames}</p>`;
+            prerequisites.style.display = 'block';
+        } else {
+            prerequisites.style.display = 'none';
+        }
+        
+        document.getElementById('research-modal').style.display = 'flex';
+        document.getElementById('research-modal').dataset.techKey = techKey;
+    }
+    
+    closeResearchModal() {
+        document.getElementById('research-modal').style.display = 'none';
+    }
+    
+    confirmResearch() {
+        const techKey = document.getElementById('research-modal').dataset.techKey;
+        const result = this.technologyManager.startResearch(techKey, this.gameState);
+        
+        this.addToLog(result.message);
+        
+        if (result.success) {
+            this.updateDisplay();
+            this.renderTechnologies();
+            this.saveGameState();
+        }
+        
+        this.closeResearchModal();
+    }
+    
+    // Rendering Methods for New Features
+    renderFieldTypes() {
+        const fieldTypesList = document.getElementById('field-types-list');
+        const availableTypes = this.oilFieldManager.getAvailableFieldTypes(this.gameState);
+        
+        fieldTypesList.innerHTML = '';
+        
+        availableTypes.forEach(([typeKey, fieldType]) => {
+            const cost = this.oilFieldManager.getFieldCost(typeKey, this.gameState);
+            const canAfford = this.gameState.money >= cost;
+            const owned = this.gameState.ownedFieldsByType?.[typeKey] || 0;
+            
+            const fieldCard = document.createElement('div');
+            fieldCard.className = `field-type-card ${canAfford ? '' : 'disabled'}`;
+            fieldCard.style.borderLeftColor = fieldType.color;
+            
+            fieldCard.innerHTML = `
+                <div class="field-type-header">
+                    <span class="field-type-name">${fieldType.name}</span>
+                    <span class="field-type-cost">$${cost.toLocaleString()}</span>
+                </div>
+                <div class="field-type-description">${fieldType.description}</div>
+                <div class="field-type-stats">
+                    <span>Production: ${fieldType.baseProduction}/month</span>
+                    <span>Owned: ${owned}</span>
+                </div>
+            `;
+            
+            if (canAfford) {
+                fieldCard.addEventListener('click', () => this.openFieldTypeModal(typeKey));
+            }
+            
+            fieldTypesList.appendChild(fieldCard);
+        });
+    }
+    
+    renderTechnologies() {
+        const technologyList = document.getElementById('technology-list');
+        const availableTechs = this.technologyManager.getAvailableTechnologies(this.gameState);
+        const researchedTechs = this.gameState.research?.completed || new Set();
+        const inProgress = this.gameState.research?.inProgress || {};
+        
+        // Update research progress display
+        const currentResearch = document.getElementById('current-research');
+        const progress = this.technologyManager.getResearchProgress(this.gameState);
+        
+        if (progress) {
+            document.getElementById('research-name').textContent = progress.name;
+            document.getElementById('research-progress').style.width = `${progress.progress}%`;
+            document.getElementById('research-time').textContent = `${progress.monthsLeft} months remaining`;
+            currentResearch.style.display = 'block';
+        } else {
+            currentResearch.style.display = 'none';
+        }
+        
+        // Group technologies by category
+        const categories = this.technologyManager.categories;
+        technologyList.innerHTML = '';
+        
+        Object.keys(categories).forEach(categoryKey => {
+            const category = categories[categoryKey];
+            const categoryTechs = availableTechs.filter(([key, tech]) => tech.category === categoryKey);
+            
+            if (categoryTechs.length > 0) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'tech-category';
+                
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'tech-category-header';
+                categoryHeader.style.borderLeftColor = category.color;
+                categoryHeader.textContent = `${category.icon} ${category.name}`;
+                
+                categoryDiv.appendChild(categoryHeader);
+                
+                categoryTechs.forEach(([techKey, tech]) => {
+                    const canAfford = this.technologyManager.canAffordTechnology(techKey, this.gameState);
+                    const isResearching = Object.keys(inProgress).length > 0;
+                    
+                    const techCard = document.createElement('div');
+                    techCard.className = `tech-card ${canAfford && !isResearching ? '' : 'disabled'}`;
+                    
+                    techCard.innerHTML = `
+                        <div class="tech-header">
+                            <span class="tech-name">${tech.name}</span>
+                            <span class="tech-cost">$${tech.cost.toLocaleString()}</span>
+                        </div>
+                        <div class="tech-description">${tech.description}</div>
+                        <div class="tech-time">${tech.researchTime} months research</div>
+                    `;
+                    
+                    if (canAfford && !isResearching) {
+                        techCard.addEventListener('click', () => this.openResearchModal(techKey));
+                    }
+                    
+                    categoryDiv.appendChild(techCard);
+                });
+                
+                technologyList.appendChild(categoryDiv);
+            }
+        });
+        
+        // Show researched technologies
+        if (researchedTechs.size > 0) {
+            const researchedDiv = document.createElement('div');
+            researchedDiv.className = 'tech-category';
+            
+            const researchedHeader = document.createElement('div');
+            researchedHeader.className = 'tech-category-header';
+            researchedHeader.style.borderLeftColor = '#27ae60';
+            researchedHeader.textContent = '✅ Completed Research';
+            
+            researchedDiv.appendChild(researchedHeader);
+            
+            researchedTechs.forEach(techKey => {
+                const tech = this.technologyManager.technologies[techKey];
+                
+                const techCard = document.createElement('div');
+                techCard.className = 'tech-card researched';
+                
+                techCard.innerHTML = `
+                    <div class="tech-header">
+                        <span class="tech-name">${tech.name}</span>
+                        <span class="tech-cost">✅ Complete</span>
+                    </div>
+                    <div class="tech-description">${tech.description}</div>
+                `;
+                
+                researchedDiv.appendChild(techCard);
+            });
+            
+            technologyList.appendChild(researchedDiv);
+        }
+    }
+    
+    renderActiveCrises() {
+        const activeCrises = document.getElementById('active-crises');
+        const crises = this.crisisManager.getActiveCrises(this.gameState);
+        
+        activeCrises.innerHTML = '';
+        
+        crises.forEach(crisis => {
+            const crisisCard = document.createElement('div');
+            crisisCard.className = 'crisis-card';
+            
+            crisisCard.innerHTML = `
+                <div class="crisis-header">${crisis.name}</div>
+                <div class="crisis-effect">${crisis.effect}</div>
+                <div class="crisis-time">${crisis.monthsLeft} months remaining</div>
+            `;
+            
+            activeCrises.appendChild(crisisCard);
+        });
+        
+        // Update risk level and maintenance cost
+        const maintenanceCost = this.oilFieldManager.calculateMaintenanceCosts(this.gameState);
+        document.getElementById('maintenance-cost').textContent = maintenanceCost.toLocaleString();
+        
+        const riskReduction = this.technologyManager.getCrisisReduction(this.gameState);
+        const riskLevel = riskReduction > 0.5 ? 'Low' : (riskReduction > 0.2 ? 'Medium' : 'High');
+        document.getElementById('crisis-risk').textContent = riskLevel;
+        
+        document.getElementById('perform-maintenance').disabled = this.gameState.money < maintenanceCost;
+    }
+    
     checkGameEnd() {
         if (this.gameState.money <= 0 && this.gameState.oilStock === 0 && this.gameState.ownedFields === 0) {
             this.gameOver('Bankruptcy! You ran out of money and assets.');
@@ -535,7 +886,7 @@ class OilEmpireGame {
         // Clear saved game state
         this.clearSavedGame();
         
-        // Reset all game state including achievements
+        // Reset all game state including achievements and new features
         this.gameState = {
             money: 100000,
             oilStock: 0,
@@ -547,6 +898,16 @@ class OilEmpireGame {
             marketTrend: 'Stable',
             gameOver: false,
             won: false,
+            
+            // New feature states
+            ownedFieldsByType: {},
+            fieldProduction: {},
+            research: {
+                completed: new Set(),
+                inProgress: {},
+                effects: {}
+            },
+            crisisEffects: {},
             
             // Reset achievements tracking
             achievements: {
@@ -588,7 +949,10 @@ class OilEmpireGame {
         this.updateDisplay();
         this.updateMarketPrices();
         this.renderAchievements();
-        this.addToLog('New game started! Build your oil empire and unlock achievements!');
+        this.renderFieldTypes();
+        this.renderTechnologies();
+        this.renderActiveCrises();
+        this.addToLog('New game started! Build your oil empire, research new technologies, and manage crises!');
     }
     
     renderAchievements() {
@@ -663,6 +1027,41 @@ class OilEmpireGame {
         // Button states
         document.getElementById('buy-field').disabled = this.gameState.money < this.getFieldCost();
         document.getElementById('upgrade-equipment').disabled = this.gameState.money < this.getUpgradeCost();
+        
+        // Update field summary
+        this.updateFieldSummary();
+    }
+    
+    updateFieldSummary() {
+        const fieldSummary = this.oilFieldManager.getFieldSummary(this.gameState);
+        const fieldsInfo = document.querySelector('.fields-info');
+        
+        // Remove existing field summary
+        const existingSummary = fieldsInfo.querySelector('.field-summary');
+        if (existingSummary) {
+            existingSummary.remove();
+        }
+        
+        if (fieldSummary.length > 0) {
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'field-summary';
+            
+            const summaryTitle = document.createElement('h4');
+            summaryTitle.textContent = 'Field Breakdown:';
+            summaryDiv.appendChild(summaryTitle);
+            
+            fieldSummary.forEach(field => {
+                const fieldItem = document.createElement('div');
+                fieldItem.className = 'field-summary-item';
+                fieldItem.innerHTML = `
+                    <span>${field.icon} ${field.name} (${field.count})</span>
+                    <span class="field-efficiency">${field.avgEfficiency}% avg</span>
+                `;
+                summaryDiv.appendChild(fieldItem);
+            });
+            
+            fieldsInfo.appendChild(summaryDiv);
+        }
     }
     
     addToLog(message) {

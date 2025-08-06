@@ -75,6 +75,43 @@
                     </div>
                 </section>
 
+                <section class="field-types-section">
+                    <h2>🏭 Oil Field Types</h2>
+                    <div id="field-types-list" class="field-types-grid">
+                        <!-- Field types will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <section class="technology-section">
+                    <h2>🔬 Research & Development</h2>
+                    <div class="research-status">
+                        <div id="current-research" style="display: none;">
+                            <h4>Current Research:</h4>
+                            <div class="research-progress">
+                                <span id="research-name"></span>
+                                <div class="progress-bar">
+                                    <div id="research-progress" class="progress-fill"></div>
+                                </div>
+                                <span id="research-time"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="technology-list" class="technology-grid">
+                        <!-- Technologies will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <section class="crisis-section">
+                    <h2>⚠️ Crisis Management</h2>
+                    <div id="active-crises" class="active-crises">
+                        <!-- Active crises will be populated by JavaScript -->
+                    </div>
+                    <div class="crisis-info">
+                        <p>Risk Level: <span id="crisis-risk">Low</span></p>
+                        <button id="perform-maintenance" class="action-btn">🔧 Perform Field Maintenance ($<span id="maintenance-cost">0</span>)</button>
+                    </div>
+                </section>
+
                 <section class="market-section">
                     <h2>📊 Oil Market</h2>
                     <div class="market-info">
@@ -190,8 +227,44 @@
                 <button id="restart-game">Start New Game</button>
             </div>
         </div>
+
+        <!-- Technology Research Modal -->
+        <div id="research-modal" class="modal">
+            <div class="modal-content">
+                <h3>Research Technology</h3>
+                <div id="research-details">
+                    <h4 id="research-tech-name"></h4>
+                    <p id="research-tech-description"></p>
+                    <p>Cost: $<span id="research-tech-cost"></span></p>
+                    <p>Research Time: <span id="research-tech-time"></span> months</p>
+                    <div id="research-prerequisites"></div>
+                </div>
+                <button id="confirm-research">Start Research</button>
+                <button id="cancel-research">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Field Type Purchase Modal -->
+        <div id="field-type-modal" class="modal">
+            <div class="modal-content">
+                <h3>Purchase Oil Field</h3>
+                <div id="field-type-details">
+                    <h4 id="field-type-name"></h4>
+                    <p id="field-type-description"></p>
+                    <p>Cost: $<span id="field-type-cost"></span></p>
+                    <p>Base Production: <span id="field-type-production"></span> barrels/month</p>
+                    <p>Maintenance: $<span id="field-type-maintenance"></span>/month</p>
+                    <div id="field-type-requirements"></div>
+                </div>
+                <button id="confirm-field-purchase">Purchase Field</button>
+                <button id="cancel-field-purchase">Cancel</button>
+            </div>
+        </div>
     </div>
 
+    <script src="crisis-events.js"></script>
+    <script src="technology.js"></script>
+    <script src="oil-fields.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
