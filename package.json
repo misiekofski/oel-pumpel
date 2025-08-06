@@ -2,6 +2,7 @@
   "name": "drill-baby-drill",
   "version": "1.0.0",
   "description": "Trump-themed oil empire game built with React",
+  "homepage": "https://misiekofski.github.io/oel-pumpel",
   "main": "src/index.js",
   "scripts": {
     "start": "react-scripts start",
