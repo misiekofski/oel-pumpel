@@ -93,6 +93,14 @@ const RANDOM_EVENTS = [
   }
 ];
 
+const CONTINENTS = [
+  { name: 'North America', distance: 1, basePrice: 45 },
+  { name: 'Europe', distance: 2, basePrice: 55 },
+  { name: 'Asia', distance: 3, basePrice: 65 },
+  { name: 'Africa', distance: 2, basePrice: 50 },
+  { name: 'South America', distance: 2, basePrice: 48 }
+];
+
 const OilGame = () => {
   // Load saved game state from localStorage
   const loadGameState = () => {
@@ -124,7 +132,8 @@ const OilGame = () => {
           continentsTraded: new Set()
         },
         activeEvents: gameState.activeEvents || [],
-        techDiscount: gameState.techDiscount || 1.0
+        techDiscount: gameState.techDiscount || 1.0,
+        autoSellSettings: gameState.autoSellSettings || {}
       };
     }
     return {
@@ -152,7 +161,8 @@ const OilGame = () => {
         continentsTraded: new Set()
       },
       activeEvents: [],
-      techDiscount: 1.0
+      techDiscount: 1.0,
+      autoSellSettings: {}
     };
   };
 
@@ -171,6 +181,7 @@ const OilGame = () => {
   const [showAchievements, setShowAchievements] = useState(false);
   const [activeEvents, setActiveEvents] = useState(initialState.activeEvents);
   const [techDiscount, setTechDiscount] = useState(initialState.techDiscount);
+  const [autoSellSettings, setAutoSellSettings] = useState(initialState.autoSellSettings);
 
   // Utility functions
   const formatNumber = useCallback((num) => {
@@ -259,28 +270,33 @@ const OilGame = () => {
         continentsTraded: Array.from(stats.continentsTraded)
       },
       activeEvents,
-      techDiscount
+      techDiscount,
+      autoSellSettings
     };
     localStorage.setItem('oilTycoonGame', JSON.stringify(gameState));
-  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats, activeEvents, techDiscount]);
+  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats, activeEvents, techDiscount, autoSellSettings]);
 
   // Game tick every 15 seconds (representing 1 week in game time)
   useEffect(() => {
     const interval = setInterval(() => {
-      setGameTime(prev => prev + 1);
-      
-      // Check for random events (5% chance per week)
-      if (Math.random() < 0.05) {
-        const availableEvents = RANDOM_EVENTS.filter(event => 
-          Math.random() < event.probability && 
-          !activeEvents.some(ae => ae.id === event.id)
-        );
+      setGameTime(prev => {
+        const newWeek = prev + 1;
         
-        if (availableEvents.length > 0) {
-          const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
-          triggerEvent(randomEvent);
+        // Check for random events (15% chance per week, but only after week 5)
+        if (newWeek >= 5 && Math.random() < 0.15) {
+          const availableEvents = RANDOM_EVENTS.filter(event => 
+            Math.random() < event.probability && 
+            !activeEvents.some(ae => ae.id === event.id)
+          );
+          
+          if (availableEvents.length > 0) {
+            const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+            setTimeout(() => triggerEvent(randomEvent), 500); // Slight delay for better UX
+          }
         }
-      }
+        
+        return newWeek;
+      });
       
       // Update active events duration
       setActiveEvents(prev => prev.map(event => ({
@@ -309,6 +325,26 @@ const OilGame = () => {
         
         return prev + totalProduction;
       });
+
+      // Handle auto-sell for continents with auto-sell enabled
+      if (oil > 0) {
+        const autoSellContinents = CONTINENTS.filter(continent => autoSellSettings[continent.name]);
+        if (autoSellContinents.length > 0) {
+          // Pick the highest paying continent with auto-sell enabled
+          const bestContinent = autoSellContinents.reduce((best, continent) => 
+            continent.basePrice > best.basePrice ? continent : best
+          );
+          
+          setTimeout(() => {
+            setOil(currentOil => {
+              if (currentOil > 0) {
+                sellOil(bestContinent, currentOil);
+              }
+              return currentOil;
+            });
+          }, 100);
+        }
+      }
 
       // Update shipments (countdown in weeks)
       setShipments(prev => prev.map(shipment => ({
@@ -529,6 +565,49 @@ const OilGame = () => {
     return false;
   };
 
+  const sellOil = (continent, amount) => {
+    if (oil >= amount && amount > 0) {
+      // Apply price multiplier from events
+      const priceMultiplier = activeEvents
+        .filter(e => e.effect.type === 'price_multiplier')
+        .reduce((mult, e) => mult * e.effect.value, 1);
+      
+      const baseValue = amount * continent.basePrice;
+      const totalValue = baseValue * priceMultiplier;
+      
+      setOil(prev => prev - amount);
+      setMoney(prev => prev + totalValue);
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        continentsTraded: new Set([...prevStats.continentsTraded, continent.name])
+      }));
+      
+      // Show notification
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Oil sold locally in ${continent.name}! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
+        type: 'success'
+      };
+      setNotifications(prev => [...prev, notification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 4000);
+      
+      return true;
+    }
+    return false;
+  };
+
+  const toggleAutoSell = (continentName) => {
+    setAutoSellSettings(prev => ({
+      ...prev,
+      [continentName]: !prev[continentName]
+    }));
+  };
+
   const formatTime = (weeks) => {
     if (weeks < 52) return `${weeks}w`;
     const years = Math.floor(weeks / 52);
@@ -545,12 +624,42 @@ const OilGame = () => {
 
   const advanceWeek = () => {
     // Manually advance the game by one week
-    setGameTime(prev => prev + 1);
+    setGameTime(prev => {
+      const newWeek = prev + 1;
+      
+      // Check for random events (15% chance per week, but only after week 5)
+      if (newWeek >= 5 && Math.random() < 0.15) {
+        const availableEvents = RANDOM_EVENTS.filter(event => 
+          Math.random() < event.probability && 
+          !activeEvents.some(ae => ae.id === event.id)
+        );
+        
+        if (availableEvents.length > 0) {
+          const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+          setTimeout(() => triggerEvent(randomEvent), 500); // Slight delay for better UX
+        }
+      }
+      
+      return newWeek;
+    });
+    
+    // Update active events duration
+    setActiveEvents(prev => prev.map(event => ({
+      ...event,
+      remainingDuration: event.remainingDuration - 1
+    })).filter(event => event.remainingDuration > 0));
     
     // Drill oil from fields (weekly production)
-    const totalProduction = oilFields.reduce((total, field) => {
+    const baseProduction = oilFields.reduce((total, field) => {
       return total + (field.productivity * technologies[currentTech].efficiency * 7);
     }, 0);
+    
+    // Apply production multiplier from events
+    const productionMultiplier = activeEvents
+      .filter(e => e.effect.type === 'production_multiplier')
+      .reduce((mult, e) => mult * e.effect.value, 1);
+    
+    const totalProduction = baseProduction * productionMultiplier;
     
     if (totalProduction > 0) {
       setOil(prev => prev + totalProduction);
@@ -572,6 +681,26 @@ const OilGame = () => {
       setTimeout(() => {
         setNotifications(prev => prev.filter(n => n.id !== notification.id));
       }, 3000);
+    }
+
+    // Handle auto-sell for continents with auto-sell enabled
+    if (totalProduction > 0) {
+      const autoSellContinents = CONTINENTS.filter(continent => autoSellSettings[continent.name]);
+      if (autoSellContinents.length > 0) {
+        // Pick the highest paying continent with auto-sell enabled
+        const bestContinent = autoSellContinents.reduce((best, continent) => 
+          continent.basePrice > best.basePrice ? continent : best
+        );
+        
+        setTimeout(() => {
+          setOil(currentOil => {
+            if (currentOil > 0) {
+              sellOil(bestContinent, currentOil);
+            }
+            return currentOil;
+          });
+        }, 100);
+      }
     }
 
     // Update shipments (countdown in weeks)
@@ -630,8 +759,11 @@ const OilGame = () => {
           oil={oil}
           shipments={shipments}
           shipOil={shipOil}
+          sellOil={sellOil}
           getAvailableShips={getAvailableShips}
           formatNumber={formatNumber}
+          autoSellSettings={autoSellSettings}
+          toggleAutoSell={toggleAutoSell}
         />
       </div>
 
