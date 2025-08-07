@@ -150,7 +150,7 @@ const OilGame = () => {
       setShipments(prev => prev.map(shipment => ({
         ...shipment,
         timeLeft: shipment.timeLeft - 1
-      })).filter(shipment => shipment.timeLeft > 0));
+      })));
 
     }, 15000); // 15 seconds per week
 
@@ -391,7 +391,7 @@ const OilGame = () => {
     setShipments(prev => prev.map(shipment => ({
       ...shipment,
       timeLeft: shipment.timeLeft - 1
-    })).filter(shipment => shipment.timeLeft > 0));
+    })));
   };
 
   return (
