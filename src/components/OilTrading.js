@@ -8,13 +8,13 @@ const CONTINENTS = [
   { name: 'South America', distance: 2, basePrice: 48 }
 ];
 
-const OilTrading = ({ oil, shipments, shipOil, sellOil, getAvailableShips, formatNumber, autoSellSettings, toggleAutoSell }) => {
+const OilTrading = ({ oil, shipments, shipOil, getAvailableShips, formatNumber }) => {
   return (
     <div className="panel">
-      <h3>Oil Trading & Shipments</h3>
+      <h3>Oil Shipping</h3>
       <div className="trading-info">
-        <p>Ship oil to different continents or sell locally. You need ships to transport oil!</p>
-        <p>Available ships: {getAvailableShips().length} | Shipped oil is automatically sold when it arrives.</p>
+        <p>Ship oil to continents. Oil will be stored in your depots when it arrives.</p>
+        <p>Available ships: {getAvailableShips().length}</p>
       </div>
       <div className="continents-list">
         {CONTINENTS.map((continent, index) => (
@@ -25,7 +25,6 @@ const OilTrading = ({ oil, shipments, shipOil, sellOil, getAvailableShips, forma
               <span className="distance">🚢 {continent.distance}w</span>
             </div>
             
-            {/* Row 1: Ship input and buttons */}
             <div className="ship-controls">
               <input 
                 type="number" 
@@ -63,32 +62,8 @@ const OilTrading = ({ oil, shipments, shipOil, sellOil, getAvailableShips, forma
                 disabled={oil === 0 || getAvailableShips().length === 0}
                 className="ship-btn"
               >
-                Ship
+                Ship Oil
               </button>
-              <button 
-                onClick={() => sellOil(continent, oil)}
-                disabled={oil === 0}
-                className="sell-all-btn"
-              >
-                Sell All
-              </button>
-            </div>
-            
-            {/* Row 2: Auto-sell toggle and status */}
-            <div className="ship-controls-row2">
-              <label className="auto-sell-toggle">
-                <input 
-                  type="checkbox" 
-                  checked={autoSellSettings[continent.name] || false}
-                  onChange={() => toggleAutoSell(continent.name)}
-                />
-                Auto-sell here
-              </label>
-              {autoSellSettings[continent.name] && (
-                <span style={{fontSize: '10px', color: '#28a745', fontWeight: 'bold'}}>
-                  ✓ AUTO
-                </span>
-              )}
             </div>
           </div>
         ))}
@@ -104,7 +79,6 @@ const OilTrading = ({ oil, shipments, shipOil, sellOil, getAvailableShips, forma
               <span>🚢 {shipment.shipName}</span>
               <span>→ {shipment.continent}</span>
               <span>{formatNumber(shipment.amount)} barrels</span>
-              <span>${formatNumber(shipment.totalValue)}</span>
               <span className="time-left">{shipment.timeLeft} week{shipment.timeLeft !== 1 ? 's' : ''}</span>
             </div>
           ))

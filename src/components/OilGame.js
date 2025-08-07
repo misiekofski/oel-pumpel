@@ -5,6 +5,7 @@ import OilFields from './OilFields';
 import ShippingFleet from './ShippingFleet';
 import Technology from './Technology';
 import OilTrading from './OilTrading';
+import OilDepots from './OilDepots';
 import Achievements from './Achievements';
 import Notifications from './Notifications';
 
@@ -133,7 +134,8 @@ const OilGame = () => {
         },
         activeEvents: gameState.activeEvents || [],
         techDiscount: gameState.techDiscount || 1.0,
-        autoSellSettings: gameState.autoSellSettings || {}
+        autoSellSettings: gameState.autoSellSettings || {},
+        depots: gameState.depots || []
       };
     }
     return {
@@ -162,7 +164,8 @@ const OilGame = () => {
       },
       activeEvents: [],
       techDiscount: 1.0,
-      autoSellSettings: {}
+      autoSellSettings: {},
+      depots: []
     };
   };
 
@@ -182,6 +185,7 @@ const OilGame = () => {
   const [activeEvents, setActiveEvents] = useState(initialState.activeEvents);
   const [techDiscount, setTechDiscount] = useState(initialState.techDiscount);
   const [autoSellSettings, setAutoSellSettings] = useState(initialState.autoSellSettings);
+  const [depots, setDepots] = useState(initialState.depots);
 
   // Utility functions
   const formatNumber = useCallback((num) => {
@@ -271,10 +275,11 @@ const OilGame = () => {
       },
       activeEvents,
       techDiscount,
-      autoSellSettings
+      autoSellSettings,
+      depots
     };
     localStorage.setItem('oilTycoonGame', JSON.stringify(gameState));
-  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats, activeEvents, techDiscount, autoSellSettings]);
+  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats, activeEvents, techDiscount, autoSellSettings, depots]);
 
   // Game tick every 15 seconds (representing 1 week in game time)
   useEffect(() => {
@@ -357,48 +362,100 @@ const OilGame = () => {
     return () => clearInterval(interval);
   }, [oilFields, currentTech, technologies, activeEvents]);
 
-  // Complete shipments and add money (auto-sell when arriving)
+  // Complete shipments and deliver to depots
   useEffect(() => {
     const completedShipments = shipments.filter(s => s.timeLeft <= 0);
     if (completedShipments.length > 0) {
-      const earnings = completedShipments.reduce((total, s) => total + s.totalValue, 0);
-      setMoney(prev => prev + earnings);
-      
-      // Update stats
-      setStats(prevStats => ({
-        ...prevStats,
-        shipmentsCompleted: prevStats.shipmentsCompleted + completedShipments.length,
-        continentsTraded: new Set([...prevStats.continentsTraded, ...completedShipments.map(s => s.continent)])
-      }));
-      
-      // Free up ships
       completedShipments.forEach(shipment => {
+        const depot = depots.find(d => d.continent === shipment.continent);
+        
+        if (depot) {
+          // Check if depot has space
+          const availableSpace = depot.capacity - depot.stored;
+          const amountToStore = Math.min(shipment.amount, availableSpace);
+          
+          if (amountToStore > 0) {
+            // Store oil in depot
+            setDepots(prev => prev.map(d => 
+              d.continent === shipment.continent 
+                ? { ...d, stored: d.stored + amountToStore }
+                : d
+            ));
+            
+            // Auto-sell if enabled and depot becomes full
+            if (autoSellSettings[shipment.continent] && depot.stored + amountToStore >= depot.capacity * 0.9) {
+              setTimeout(() => {
+                sellFromDepot(shipment.continent, depot.stored + amountToStore);
+              }, 500);
+            }
+            
+            // Show delivery notification
+            const notification = {
+              id: Date.now() + Math.random(),
+              message: `${formatNumber(amountToStore)} barrels delivered to ${shipment.continent} depot!`,
+              type: 'success'
+            };
+            setNotifications(prev => [...prev, notification]);
+            setTimeout(() => {
+              setNotifications(prev => prev.filter(n => n.id !== notification.id));
+            }, 4000);
+          }
+          
+          // If shipment is larger than available space, delay the shipment
+          if (shipment.amount > availableSpace) {
+            setShipments(prev => prev.map(s => 
+              s.id === shipment.id 
+                ? { ...s, timeLeft: 1 } // Wait one more week
+                : s
+            ));
+            
+            const notification = {
+              id: Date.now() + Math.random(),
+              message: `Depot in ${shipment.continent} is full! Ship waiting to unload.`,
+              type: 'warning'
+            };
+            setNotifications(prev => [...prev, notification]);
+            setTimeout(() => {
+              setNotifications(prev => prev.filter(n => n.id !== notification.id));
+            }, 6000);
+            
+            return; // Don't free the ship yet
+          }
+        } else {
+          // No depot - sell directly (old behavior)
+          const earnings = shipment.totalValue;
+          setMoney(prev => prev + earnings);
+          
+          const notification = {
+            id: Date.now() + Math.random(),
+            message: `Oil sold in ${shipment.continent}! +$${formatNumber(earnings)} (no depot)`,
+            type: 'success'
+          };
+          setNotifications(prev => [...prev, notification]);
+          setTimeout(() => {
+            setNotifications(prev => prev.filter(n => n.id !== notification.id));
+          }, 4000);
+        }
+        
+        // Free up ship
         setShips(prevShips => prevShips.map(ship => 
           ship.id === shipment.shipId 
             ? { ...ship, inUse: false, destination: null }
             : ship
         ));
-      });
-      
-      // Remove completed shipments
-      setShipments(prevShipments => prevShipments.filter(s => s.timeLeft > 0));
-      
-      // Add notifications for completed shipments
-      completedShipments.forEach(shipment => {
-        const notification = {
-          id: Date.now() + Math.random(),
-          message: `Oil sold in ${shipment.continent}! +$${formatNumber(shipment.totalValue)}`,
-          type: 'success'
-        };
-        setNotifications(prev => [...prev, notification]);
         
-        // Remove notification after 5 seconds
-        setTimeout(() => {
-          setNotifications(prev => prev.filter(n => n.id !== notification.id));
-        }, 5000);
+        // Update stats
+        setStats(prevStats => ({
+          ...prevStats,
+          shipmentsCompleted: prevStats.shipmentsCompleted + 1,
+          continentsTraded: new Set([...prevStats.continentsTraded, shipment.continent])
+        }));
       });
+      
+      // Remove completed shipments (only those that were fully processed)
+      setShipments(prevShipments => prevShipments.filter(s => s.timeLeft > 0));
     }
-  }, [shipments, formatNumber]);
+  }, [shipments, depots, autoSellSettings, formatNumber]);
 
   // Check achievements
   useEffect(() => {
@@ -608,6 +665,103 @@ const OilGame = () => {
     }));
   };
 
+  const buyDepot = (continentName) => {
+    const cost = 5000;
+    if (money >= cost) {
+      setMoney(prev => prev - cost);
+      setDepots(prev => [...prev, {
+        id: Date.now(),
+        continent: continentName,
+        capacity: 5000,
+        stored: 0,
+        level: 1
+      }]);
+      
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Oil depot built in ${continentName}! Capacity: 5,000 barrels`,
+        type: 'success'
+      };
+      setNotifications(prev => [...prev, notification]);
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 4000);
+    }
+  };
+
+  const upgradeDepot = (continentName) => {
+    const depot = depots.find(d => d.continent === continentName);
+    if (depot) {
+      const cost = depot.level * 3000 + 2000;
+      if (money >= cost) {
+        setMoney(prev => prev - cost);
+        setDepots(prev => prev.map(d => 
+          d.continent === continentName 
+            ? { 
+                ...d, 
+                capacity: d.capacity + (d.level * 1000 + 2000),
+                level: d.level + 1 
+              }
+            : d
+        ));
+        
+        const newCapacity = depot.level * 1000 + 2000;
+        const notification = {
+          id: Date.now() + Math.random(),
+          message: `Depot upgraded in ${continentName}! +${formatNumber(newCapacity)} capacity`,
+          type: 'success'
+        };
+        setNotifications(prev => [...prev, notification]);
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== notification.id));
+        }, 4000);
+      }
+    }
+  };
+
+  const sellFromDepot = (continentName, amount) => {
+    const depot = depots.find(d => d.continent === continentName);
+    const continent = CONTINENTS.find(c => c.name === continentName);
+    
+    if (depot && continent && depot.stored >= amount && amount > 0) {
+      // Apply price multiplier from events
+      const priceMultiplier = activeEvents
+        .filter(e => e.effect.type === 'price_multiplier')
+        .reduce((mult, e) => mult * e.effect.value, 1);
+      
+      const baseValue = amount * continent.basePrice;
+      const totalValue = baseValue * priceMultiplier;
+      
+      setDepots(prev => prev.map(d => 
+        d.continent === continentName 
+          ? { ...d, stored: d.stored - amount }
+          : d
+      ));
+      setMoney(prev => prev + totalValue);
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        continentsTraded: new Set([...prevStats.continentsTraded, continentName])
+      }));
+      
+      // Show notification
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Oil sold from ${continentName} depot! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
+        type: 'success'
+      };
+      setNotifications(prev => [...prev, notification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 4000);
+      
+      return true;
+    }
+    return false;
+  };
+
   const formatTime = (weeks) => {
     if (weeks < 52) return `${weeks}w`;
     const years = Math.floor(weeks / 52);
@@ -759,9 +913,17 @@ const OilGame = () => {
           oil={oil}
           shipments={shipments}
           shipOil={shipOil}
-          sellOil={sellOil}
           getAvailableShips={getAvailableShips}
           formatNumber={formatNumber}
+        />
+
+        <OilDepots 
+          depots={depots}
+          buyDepot={buyDepot}
+          upgradeDepot={upgradeDepot}
+          sellFromDepot={sellFromDepot}
+          formatNumber={formatNumber}
+          money={money}
           autoSellSettings={autoSellSettings}
           toggleAutoSell={toggleAutoSell}
         />

@@ -48,6 +48,11 @@
   color: #212529;
 }
 
+.notification.error {
+  background-color: #dc3545;
+  border-left: 4px solid #c82333;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -514,6 +519,110 @@
   color: #6c757d;
   font-style: italic;
   padding: 15px;
+}
+
+/* Oil Depots Styles */
+.depots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.depot-item {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+}
+
+.depot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.depot-name {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.depot-price {
+  color: #28a745;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.depot-level {
+  background-color: #007bff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.depot-buy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.depot-info {
+  font-size: 11px;
+  color: #6c757d;
+  flex: 1;
+}
+
+.depot-status {
+  margin-bottom: 8px;
+}
+
+.capacity-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.capacity-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.capacity-text {
+  font-size: 11px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.depot-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.depot-actions button {
+  padding: 6px 8px;
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.depot-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.auto-indicator {
+  font-size: 10px;
+  color: #28a745;
+  font-weight: bold;
 }
 
 /* Responsive design */
