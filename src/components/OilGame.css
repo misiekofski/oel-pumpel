@@ -37,6 +37,11 @@
   color: #212529;
 }
 
+.notification.info {
+  background-color: #17a2b8;
+  border-left: 4px solid #138496;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -102,6 +107,22 @@
 
 .achievements-btn:hover {
   background-color: #e0a800;
+}
+
+.next-week-btn {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.next-week-btn:hover {
+  background-color: #138496;
 }
 
 .game-grid {

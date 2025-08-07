@@ -8,21 +8,6 @@ import OilTrading from './OilTrading';
 import Achievements from './Achievements';
 import Notifications from './Notifications';
 
-const CONTINENTS = [
-  { name: 'North America', distance: 1, basePrice: 45 },
-  { name: 'Europe', distance: 2, basePrice: 55 },
-  { name: 'Asia', distance: 3, basePrice: 65 },
-  { name: 'Africa', distance: 2, basePrice: 50 },
-  { name: 'South America', distance: 2, basePrice: 48 }
-];
-
-const SHIP_TYPES = [
-  { name: 'Small Tanker', capacity: 1000, cost: 50000, speed: 1 },
-  { name: 'Medium Tanker', capacity: 2500, cost: 120000, speed: 1.2 },
-  { name: 'Large Tanker', capacity: 5000, cost: 250000, speed: 1.5 },
-  { name: 'Super Tanker', capacity: 10000, cost: 500000, speed: 1.8 }
-];
-
 const ACHIEVEMENTS = [
   { id: 'first_field', name: 'Oil Baron Beginner', description: 'Buy your first oil field', target: 1, type: 'oilFields', unlocked: false },
   { id: 'oil_millionaire', name: 'Oil Millionaire', description: 'Accumulate $1,000,000', target: 1000000, type: 'money', unlocked: false },
@@ -114,6 +99,13 @@ const OilGame = () => {
   const [stats, setStats] = useState(initialState.stats);
   const [showAchievements, setShowAchievements] = useState(false);
 
+  // Utility functions
+  const formatNumber = (num) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return Math.floor(num).toString();
+  };
+
   // Save game state to localStorage whenever state changes
   useEffect(() => {
     const gameState = {
@@ -203,7 +195,7 @@ const OilGame = () => {
         }, 5000);
       });
     }
-  }, [shipments]);
+  }, [shipments, formatNumber]);
 
   // Check achievements
   useEffect(() => {
@@ -347,12 +339,6 @@ const OilGame = () => {
     return false;
   };
 
-  const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return Math.floor(num).toString();
-  };
-
   const formatTime = (weeks) => {
     if (weeks < 52) return `${weeks}w`;
     const years = Math.floor(weeks / 52);
@@ -365,6 +351,44 @@ const OilGame = () => {
       localStorage.removeItem('oilTycoonGame');
       window.location.reload();
     }
+  };
+
+  const advanceWeek = () => {
+    // Manually advance the game by one week
+    setGameTime(prev => prev + 1);
+    
+    // Drill oil from fields (weekly production)
+    const totalProduction = oilFields.reduce((total, field) => {
+      return total + (field.productivity * technologies[currentTech].efficiency * 7);
+    }, 0);
+    
+    if (totalProduction > 0) {
+      setOil(prev => prev + totalProduction);
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        totalOilDrilled: prevStats.totalOilDrilled + totalProduction
+      }));
+      
+      // Show production notification
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Week completed! Drilled ${formatNumber(totalProduction)} barrels of oil`,
+        type: 'info'
+      };
+      setNotifications(prev => [...prev, notification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 3000);
+    }
+
+    // Update shipments (countdown in weeks)
+    setShipments(prev => prev.map(shipment => ({
+      ...shipment,
+      timeLeft: shipment.timeLeft - 1
+    })).filter(shipment => shipment.timeLeft > 0));
   };
 
   return (
@@ -383,6 +407,7 @@ const OilGame = () => {
         setShowAchievements={setShowAchievements}
         showAchievements={showAchievements}
         resetGame={resetGame}
+        advanceWeek={advanceWeek}
       />
 
       <div className="game-grid">

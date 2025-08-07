@@ -11,7 +11,8 @@ const Header = ({
   getAvailableShips, 
   setShowAchievements, 
   showAchievements, 
-  resetGame 
+  resetGame,
+  advanceWeek 
 }) => {
   return (
     <div className="header">
@@ -21,6 +22,7 @@ const Header = ({
         <span>🛢️ {formatNumber(oil)} barrels</span>
         <span>🚢 {ships.length} ships ({getAvailableShips().length} available)</span>
         <span>📅 Week {gameTime} ({formatTime(gameTime)})</span>
+        <button onClick={advanceWeek} className="next-week-btn">⏭️ Next Week</button>
         <button 
           onClick={() => setShowAchievements(!showAchievements)} 
           className="achievements-btn"
