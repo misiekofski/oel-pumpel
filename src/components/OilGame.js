@@ -360,7 +360,7 @@ const OilGame = () => {
     }, 15000); // 15 seconds per week
 
     return () => clearInterval(interval);
-  }, [oilFields, currentTech, technologies, activeEvents]);
+  }, [oilFields, currentTech, technologies, activeEvents, autoSellSettings, oil, sellOil]);
 
   // Complete shipments and deliver to depots
   useEffect(() => {
@@ -455,7 +455,7 @@ const OilGame = () => {
       // Remove completed shipments (only those that were fully processed)
       setShipments(prevShipments => prevShipments.filter(s => s.timeLeft > 0));
     }
-  }, [shipments, depots, autoSellSettings, formatNumber]);
+  }, [shipments, depots, autoSellSettings, formatNumber, sellFromDepot]);
 
   // Check achievements
   useEffect(() => {
@@ -622,7 +622,7 @@ const OilGame = () => {
     return false;
   };
 
-  const sellOil = (continent, amount) => {
+  const sellOil = useCallback((continent, amount) => {
     if (oil >= amount && amount > 0) {
       // Apply price multiplier from events
       const priceMultiplier = activeEvents
@@ -656,7 +656,7 @@ const OilGame = () => {
       return true;
     }
     return false;
-  };
+  }, [oil, activeEvents, formatNumber]);
 
   const toggleAutoSell = (continentName) => {
     setAutoSellSettings(prev => ({
@@ -719,7 +719,7 @@ const OilGame = () => {
     }
   };
 
-  const sellFromDepot = (continentName, amount) => {
+  const sellFromDepot = useCallback((continentName, amount) => {
     const depot = depots.find(d => d.continent === continentName);
     const continent = CONTINENTS.find(c => c.name === continentName);
     
@@ -760,7 +760,7 @@ const OilGame = () => {
       return true;
     }
     return false;
-  };
+  }, [depots, activeEvents, formatNumber]);
 
   const formatTime = (weeks) => {
     if (weeks < 52) return `${weeks}w`;
