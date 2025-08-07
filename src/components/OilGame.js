@@ -194,6 +194,85 @@ const OilGame = () => {
     return Math.floor(num).toString();
   }, []);
 
+  const sellOil = useCallback((continent, amount) => {
+    if (oil >= amount && amount > 0) {
+      // Apply price multiplier from events
+      const priceMultiplier = activeEvents
+        .filter(e => e.effect.type === 'price_multiplier')
+        .reduce((mult, e) => mult * e.effect.value, 1);
+      
+      const baseValue = amount * continent.basePrice;
+      const totalValue = baseValue * priceMultiplier;
+      
+      setOil(prev => prev - amount);
+      setMoney(prev => prev + totalValue);
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        continentsTraded: new Set([...prevStats.continentsTraded, continent.name])
+      }));
+      
+      // Show notification
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Oil sold locally in ${continent.name}! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
+        type: 'success'
+      };
+      setNotifications(prev => [...prev, notification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 4000);
+      
+      return true;
+    }
+    return false;
+  }, [oil, activeEvents, formatNumber]);
+
+  const sellFromDepot = useCallback((continentName, amount) => {
+    const depot = depots.find(d => d.continent === continentName);
+    const continent = CONTINENTS.find(c => c.name === continentName);
+    
+    if (depot && continent && depot.stored >= amount && amount > 0) {
+      // Apply price multiplier from events
+      const priceMultiplier = activeEvents
+        .filter(e => e.effect.type === 'price_multiplier')
+        .reduce((mult, e) => mult * e.effect.value, 1);
+      
+      const baseValue = amount * continent.basePrice;
+      const totalValue = baseValue * priceMultiplier;
+      
+      setDepots(prev => prev.map(d => 
+        d.continent === continentName 
+          ? { ...d, stored: d.stored - amount }
+          : d
+      ));
+      setMoney(prev => prev + totalValue);
+      
+      // Update stats
+      setStats(prevStats => ({
+        ...prevStats,
+        continentsTraded: new Set([...prevStats.continentsTraded, continentName])
+      }));
+      
+      // Show notification
+      const notification = {
+        id: Date.now() + Math.random(),
+        message: `Oil sold from ${continentName} depot! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
+        type: 'success'
+      };
+      setNotifications(prev => [...prev, notification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== notification.id));
+      }, 4000);
+      
+      return true;
+    }
+    return false;
+  }, [depots, activeEvents, formatNumber]);
+
   const triggerEvent = (event) => {
     // Apply immediate effects
     switch (event.effect.type) {
@@ -622,42 +701,6 @@ const OilGame = () => {
     return false;
   };
 
-  const sellOil = useCallback((continent, amount) => {
-    if (oil >= amount && amount > 0) {
-      // Apply price multiplier from events
-      const priceMultiplier = activeEvents
-        .filter(e => e.effect.type === 'price_multiplier')
-        .reduce((mult, e) => mult * e.effect.value, 1);
-      
-      const baseValue = amount * continent.basePrice;
-      const totalValue = baseValue * priceMultiplier;
-      
-      setOil(prev => prev - amount);
-      setMoney(prev => prev + totalValue);
-      
-      // Update stats
-      setStats(prevStats => ({
-        ...prevStats,
-        continentsTraded: new Set([...prevStats.continentsTraded, continent.name])
-      }));
-      
-      // Show notification
-      const notification = {
-        id: Date.now() + Math.random(),
-        message: `Oil sold locally in ${continent.name}! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
-        type: 'success'
-      };
-      setNotifications(prev => [...prev, notification]);
-      
-      setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== notification.id));
-      }, 4000);
-      
-      return true;
-    }
-    return false;
-  }, [oil, activeEvents, formatNumber]);
-
   const toggleAutoSell = (continentName) => {
     setAutoSellSettings(prev => ({
       ...prev,
@@ -718,49 +761,6 @@ const OilGame = () => {
       }
     }
   };
-
-  const sellFromDepot = useCallback((continentName, amount) => {
-    const depot = depots.find(d => d.continent === continentName);
-    const continent = CONTINENTS.find(c => c.name === continentName);
-    
-    if (depot && continent && depot.stored >= amount && amount > 0) {
-      // Apply price multiplier from events
-      const priceMultiplier = activeEvents
-        .filter(e => e.effect.type === 'price_multiplier')
-        .reduce((mult, e) => mult * e.effect.value, 1);
-      
-      const baseValue = amount * continent.basePrice;
-      const totalValue = baseValue * priceMultiplier;
-      
-      setDepots(prev => prev.map(d => 
-        d.continent === continentName 
-          ? { ...d, stored: d.stored - amount }
-          : d
-      ));
-      setMoney(prev => prev + totalValue);
-      
-      // Update stats
-      setStats(prevStats => ({
-        ...prevStats,
-        continentsTraded: new Set([...prevStats.continentsTraded, continentName])
-      }));
-      
-      // Show notification
-      const notification = {
-        id: Date.now() + Math.random(),
-        message: `Oil sold from ${continentName} depot! +$${formatNumber(totalValue)} (${formatNumber(amount)} barrels)`,
-        type: 'success'
-      };
-      setNotifications(prev => [...prev, notification]);
-      
-      setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== notification.id));
-      }, 4000);
-      
-      return true;
-    }
-    return false;
-  }, [depots, activeEvents, formatNumber]);
 
   const formatTime = (weeks) => {
     if (weeks < 52) return `${weeks}w`;
