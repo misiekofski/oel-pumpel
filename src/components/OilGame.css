@@ -42,6 +42,12 @@
   border-left: 4px solid #138496;
 }
 
+.notification.warning {
+  background-color: #ffc107;
+  border-left: 4px solid #e0a800;
+  color: #212529;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(100%);

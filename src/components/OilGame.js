@@ -26,6 +26,73 @@ const TECHNOLOGIES = [
   { name: 'Deep Sea Drilling', cost: 50000, efficiency: 3.5, unlocked: false }
 ];
 
+const RANDOM_EVENTS = [
+  {
+    id: 'oil_boom',
+    name: 'Oil Price Boom!',
+    description: 'Global oil prices surge! All shipments earn 50% more for the next 3 weeks.',
+    type: 'positive',
+    probability: 0.15,
+    effect: { type: 'price_multiplier', value: 1.5, duration: 3 }
+  },
+  {
+    id: 'equipment_failure',
+    name: 'Equipment Malfunction',
+    description: 'Drilling equipment breaks down. Oil production reduced by 30% for 2 weeks.',
+    type: 'negative',
+    probability: 0.12,
+    effect: { type: 'production_multiplier', value: 0.7, duration: 2 }
+  },
+  {
+    id: 'oil_discovery',
+    name: 'New Oil Deposit Found!',
+    description: 'Geologists discover a new oil field! Gain a free high-productivity oil field.',
+    type: 'positive',
+    probability: 0.08,
+    effect: { type: 'free_field', value: 2.0 }
+  },
+  {
+    id: 'storm_delays',
+    name: 'Severe Weather',
+    description: 'Storms delay all shipments by 1-2 weeks.',
+    type: 'negative',
+    probability: 0.10,
+    effect: { type: 'shipment_delay', value: 2 }
+  },
+  {
+    id: 'government_subsidy',
+    name: 'Government Subsidy',
+    description: 'Government provides oil industry support! Receive a cash bonus.',
+    type: 'positive',
+    probability: 0.12,
+    effect: { type: 'cash_bonus', value: 15000 }
+  },
+  {
+    id: 'competitor_buyout',
+    name: 'Competitor Acquisition',
+    description: 'You acquire a smaller competitor! Gain 2 ships and some cash.',
+    type: 'positive',
+    probability: 0.06,
+    effect: { type: 'ships_and_cash', ships: 2, cash: 8000 }
+  },
+  {
+    id: 'environmental_fine',
+    name: 'Environmental Fine',
+    description: 'Environmental violations result in hefty fines and cleanup costs.',
+    type: 'negative',
+    probability: 0.08,
+    effect: { type: 'fine', value: 12000 }
+  },
+  {
+    id: 'tech_breakthrough',
+    name: 'Technology Breakthrough!',
+    description: 'Your R&D team makes a breakthrough! Get a 25% discount on next technology.',
+    type: 'positive',
+    probability: 0.10,
+    effect: { type: 'tech_discount', value: 0.75 }
+  }
+];
+
 const OilGame = () => {
   // Load saved game state from localStorage
   const loadGameState = () => {
@@ -55,7 +122,9 @@ const OilGame = () => {
           totalOilDrilled: 0,
           shipmentsCompleted: 0,
           continentsTraded: new Set()
-        }
+        },
+        activeEvents: gameState.activeEvents || [],
+        techDiscount: gameState.techDiscount || 1.0
       };
     }
     return {
@@ -81,7 +150,9 @@ const OilGame = () => {
         totalOilDrilled: 0,
         shipmentsCompleted: 0,
         continentsTraded: new Set()
-      }
+      },
+      activeEvents: [],
+      techDiscount: 1.0
     };
   };
 
@@ -98,6 +169,8 @@ const OilGame = () => {
   const [achievements, setAchievements] = useState(initialState.achievements);
   const [stats, setStats] = useState(initialState.stats);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [activeEvents, setActiveEvents] = useState(initialState.activeEvents);
+  const [techDiscount, setTechDiscount] = useState(initialState.techDiscount);
 
   // Utility functions
   const formatNumber = useCallback((num) => {
@@ -105,6 +178,69 @@ const OilGame = () => {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return Math.floor(num).toString();
   }, []);
+
+  const triggerEvent = (event) => {
+    // Apply immediate effects
+    switch (event.effect.type) {
+      case 'cash_bonus':
+        setMoney(prev => prev + event.effect.value);
+        break;
+      case 'fine':
+        setMoney(prev => Math.max(0, prev - event.effect.value));
+        break;
+      case 'free_field':
+        setOilFields(prev => [...prev, {
+          id: Date.now(),
+          productivity: event.effect.value,
+          name: `Bonus Field ${prev.length + 1}`
+        }]);
+        break;
+      case 'ships_and_cash':
+        setMoney(prev => prev + event.effect.cash);
+        for (let i = 0; i < event.effect.ships; i++) {
+          setShips(prev => [...prev, {
+            id: Date.now() + i,
+            type: 'Acquired Tanker',
+            capacity: 1500,
+            speed: 1,
+            inUse: false,
+            destination: null
+          }]);
+        }
+        break;
+      case 'tech_discount':
+        setTechDiscount(event.effect.value);
+        break;
+      case 'shipment_delay':
+        setShipments(prev => prev.map(shipment => ({
+          ...shipment,
+          timeLeft: shipment.timeLeft + Math.floor(Math.random() * event.effect.value) + 1
+        })));
+        break;
+      default:
+        break;
+    }
+
+    // Add ongoing effects
+    if (event.effect.duration) {
+      setActiveEvents(prev => [...prev, {
+        ...event,
+        remainingDuration: event.effect.duration
+      }]);
+    }
+
+    // Show notification
+    const notification = {
+      id: Date.now() + Math.random(),
+      message: `${event.name}: ${event.description}`,
+      type: event.type === 'positive' ? 'achievement' : 'info'
+    };
+    setNotifications(prev => [...prev, notification]);
+    
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== notification.id));
+    }, 8000);
+  };
 
   // Save game state to localStorage whenever state changes
   useEffect(() => {
@@ -121,21 +257,49 @@ const OilGame = () => {
       stats: {
         ...stats,
         continentsTraded: Array.from(stats.continentsTraded)
-      }
+      },
+      activeEvents,
+      techDiscount
     };
     localStorage.setItem('oilTycoonGame', JSON.stringify(gameState));
-  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats]);
+  }, [money, oil, oilFields, technologies, currentTech, shipments, gameTime, ships, achievements, stats, activeEvents, techDiscount]);
 
   // Game tick every 15 seconds (representing 1 week in game time)
   useEffect(() => {
     const interval = setInterval(() => {
       setGameTime(prev => prev + 1);
       
+      // Check for random events (5% chance per week)
+      if (Math.random() < 0.05) {
+        const availableEvents = RANDOM_EVENTS.filter(event => 
+          Math.random() < event.probability && 
+          !activeEvents.some(ae => ae.id === event.id)
+        );
+        
+        if (availableEvents.length > 0) {
+          const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+          triggerEvent(randomEvent);
+        }
+      }
+      
+      // Update active events duration
+      setActiveEvents(prev => prev.map(event => ({
+        ...event,
+        remainingDuration: event.remainingDuration - 1
+      })).filter(event => event.remainingDuration > 0));
+      
       // Drill oil from fields (weekly production)
       setOil(prev => {
-        const totalProduction = oilFields.reduce((total, field) => {
+        const baseProduction = oilFields.reduce((total, field) => {
           return total + (field.productivity * technologies[currentTech].efficiency * 7);
         }, 0);
+        
+        // Apply production multiplier from events
+        const productionMultiplier = activeEvents
+          .filter(e => e.effect.type === 'production_multiplier')
+          .reduce((mult, e) => mult * e.effect.value, 1);
+        
+        const totalProduction = baseProduction * productionMultiplier;
         
         // Update stats
         setStats(prevStats => ({
@@ -155,7 +319,7 @@ const OilGame = () => {
     }, 15000); // 15 seconds per week
 
     return () => clearInterval(interval);
-  }, [oilFields, currentTech, technologies]);
+  }, [oilFields, currentTech, technologies, activeEvents]);
 
   // Complete shipments and add money (auto-sell when arriving)
   useEffect(() => {
@@ -298,11 +462,26 @@ const OilGame = () => {
 
   const buyTechnology = (techIndex) => {
     const tech = technologies[techIndex];
-    if (money >= tech.cost && !tech.unlocked) {
-      setMoney(prev => prev - tech.cost);
+    const discountedCost = Math.floor(tech.cost * techDiscount);
+    if (money >= discountedCost && !tech.unlocked) {
+      setMoney(prev => prev - discountedCost);
       setTechnologies(prev => prev.map((t, i) => 
         i === techIndex ? { ...t, unlocked: true } : t
       ));
+      
+      // Reset tech discount after use
+      if (techDiscount < 1.0) {
+        setTechDiscount(1.0);
+        const notification = {
+          id: Date.now() + Math.random(),
+          message: 'Technology discount used! Future techs at normal price.',
+          type: 'info'
+        };
+        setNotifications(prev => [...prev, notification]);
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== notification.id));
+        }, 4000);
+      }
     }
   };
 
@@ -319,6 +498,14 @@ const OilGame = () => {
       
       setOil(prev => prev - actualAmount);
       
+      // Apply price multiplier from events
+      const priceMultiplier = activeEvents
+        .filter(e => e.effect.type === 'price_multiplier')
+        .reduce((mult, e) => mult * e.effect.value, 1);
+      
+      const baseValue = actualAmount * continent.basePrice;
+      const totalValue = baseValue * priceMultiplier;
+      
       // Mark ship as in use
       setShips(prevShips => prevShips.map(ship => 
         ship.id === suitableShip.id 
@@ -330,7 +517,7 @@ const OilGame = () => {
         id: Date.now(),
         continent: continent.name,
         amount: actualAmount,
-        totalValue: actualAmount * continent.basePrice,
+        totalValue: totalValue,
         timeLeft: Math.ceil(continent.distance / suitableShip.speed),
         shipId: suitableShip.id,
         shipName: suitableShip.type
@@ -436,6 +623,7 @@ const OilGame = () => {
           buyTechnology={buyTechnology}
           setCurrentTech={setCurrentTech}
           formatNumber={formatNumber}
+          techDiscount={techDiscount}
         />
 
         <OilTrading 
