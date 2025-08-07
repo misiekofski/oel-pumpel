@@ -1,18 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import OilGame from './components/OilGame';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Hello World!</h1>
-        <p>
-          Welcome to my simple React app deployed with GitHub Actions to GitHub Pages.
-        </p>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-      </header>
+      <OilGame />
     </div>
   );
 }
