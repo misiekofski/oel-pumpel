@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './OilGame.css';
 import Header from './Header';
 import OilFields from './OilFields';
@@ -100,11 +100,11 @@ const OilGame = () => {
   const [showAchievements, setShowAchievements] = useState(false);
 
   // Utility functions
-  const formatNumber = (num) => {
+  const formatNumber = useCallback((num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return Math.floor(num).toString();
-  };
+  }, []);
 
   // Save game state to localStorage whenever state changes
   useEffect(() => {
@@ -179,6 +179,9 @@ const OilGame = () => {
             : ship
         ));
       });
+      
+      // Remove completed shipments
+      setShipments(prevShipments => prevShipments.filter(s => s.timeLeft > 0));
       
       // Add notifications for completed shipments
       completedShipments.forEach(shipment => {

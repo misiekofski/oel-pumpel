@@ -41,6 +41,7 @@ const Achievements = ({
                         case 'technologiesUnlocked': current = technologies.filter(t => t.unlocked).length; break;
                         case 'ships': current = ships.length; break;
                         case 'continentsTraded': current = stats.continentsTraded.size; break;
+                        default: current = 0; break;
                       }
                       return `${formatNumber(current)} / ${formatNumber(achievement.target)}`;
                     })()}
