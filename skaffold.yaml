@@ -1,0 +1,26 @@
+apiVersion: skaffold/v4beta8
+kind: Config
+metadata:
+  name: oil-tycoon
+build:
+  artifacts:
+    - image: oil-tycoon
+      context: .
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: false
+    useDockerCLI: true
+    useBuildkit: false
+deploy:
+  helm:
+    releases:
+      - name: oil-tycoon
+        chartPath: helm/oil-tycoon
+        values:
+          image.repository: oil-tycoon
+          image.tag: latest
+        setValueTemplates:
+          image.repository: oil-tycoon
+          image.tag: latest
+        wait: true

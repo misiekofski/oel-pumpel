@@ -1,0 +1,23 @@
+apiVersion: skaffold/v4beta8
+kind: Config
+metadata:
+  name: oil-tycoon-dev
+build:
+  local:
+    push: false
+    useDockerCLI: true
+    useBuildkit: false
+deploy:
+  helm:
+    releases:
+      - name: oil-tycoon
+        chartPath: helm/oil-tycoon
+        values:
+          replicaCount: 1
+          service:
+            type: ClusterIP
+            port: 3000
+        setValueTemplates:
+          image.repository: oil-tycoon
+          image.tag: latest
+        wait: false

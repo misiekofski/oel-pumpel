@@ -1,0 +1,4 @@
+apiVersion: v2
+name: oil-tycoon
+version: 0.1.0
+description: Helm chart for Oil Tycoon React app
